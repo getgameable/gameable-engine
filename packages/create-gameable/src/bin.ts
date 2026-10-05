@@ -1,0 +1,10 @@
+/**
+ * The executable. `bin/create-gameable.mjs` launches the build of this file.
+ *
+ * Nothing lives here but the process plumbing: everything else is in
+ * `src/create.ts`, which returns an exit code instead of calling `process.exit`.
+ */
+import { main } from './create.js';
+
+const code = await main(process.argv.slice(2), process.cwd());
+if (code !== 0) process.exitCode = code;

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "baseUrl": "/",
+  "assets": [
+    {
+      "id": "env.arena",
+      "type": "splat",
+      "src": "@placeholder/arena.spz",
+      "tags": ["world"],
+      "collider": { "shape": "mesh", "src": "@placeholder/arena.collider.bin", "layer": "static" }
+    },
+    {
+      "id": "char.hero",
+      "type": "character",
+      "src": "@aosrig/aosrig_v0.glb",
+      "tags": ["character"],
+      "rig": { "backend": "skinned" }
+    },
+    {
+      "id": "char.guide",
+      "type": "character",
+      "src": "@aosrig/aosrig_v0.glb",
+      "tags": ["character"],
+      "rig": { "backend": "skinned" }
+    },
+    { "id": "sfx.key", "type": "audio", "src": "@placeholder/pickup.wav", "tags": ["sfx"] },
+    { "id": "sfx.door", "type": "audio", "src": "@placeholder/hit.wav", "tags": ["sfx"] },
+    { "id": "sfx.talk", "type": "audio", "src": "@placeholder/shot.wav", "tags": ["sfx"] },
+    { "id": "sfx.step", "type": "audio", "src": "@placeholder/step.wav", "tags": ["sfx"] }
+  ]
+}

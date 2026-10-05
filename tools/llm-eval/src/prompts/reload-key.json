@@ -1,0 +1,25 @@
+{
+  "id": "reload-key",
+  "title": "Reload on R instead of only when empty",
+  "template": "fps",
+  "prompt": "Let the player reload manually by pressing R, as well as automatically when the magazine runs out. Pressing R with a full magazine, or while already reloading, must do nothing.",
+  "expectedFiles": ["src/systems/weapon.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "'R'|\"R\"|KeyR",
+      "note": "the R key is read"
+    },
+    {
+      "file": "*",
+      "pattern": "input\\.(pressed|isDown)",
+      "note": "through the input facade"
+    },
+    {
+      "file": "*",
+      "pattern": "reload",
+      "minCount": 2,
+      "note": "reload logic touched"
+    }
+  ]
+}

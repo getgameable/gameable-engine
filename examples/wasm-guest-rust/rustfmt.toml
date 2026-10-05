@@ -1,0 +1,5 @@
+# rustfmt's default "small heuristics" explode a three-field `Quat { … }` over
+# five lines, and this file is mostly short record literals. "Max" keeps any
+# literal that fits inside max_width on one line, which is what makes the
+# command construction readable as a table.
+use_small_heuristics = "Max"

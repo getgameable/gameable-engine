@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // Resolve @gameable/assets to its TypeScript source, the same `gameable-source`
+    // condition `npm run dev` and vitest use; without it the manifest types come
+    // from a possibly stale `dist/index.d.ts`.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

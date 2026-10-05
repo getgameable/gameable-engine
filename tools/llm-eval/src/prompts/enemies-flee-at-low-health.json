@@ -1,0 +1,26 @@
+{
+  "id": "enemies-flee-at-low-health",
+  "title": "Enemies flee below 20% health",
+  "template": "fps",
+  "prompt": "Change the enemy AI so that an enemy whose health drops below 20% of its maximum stops attacking and runs away from the player instead of towards them. It should keep fleeing while it is below the threshold. Put the threshold in the game rules.",
+  "expectedFiles": ["src/systems/enemyAI.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "\\b(flee|fleeing|retreat|run\\s*away)\\b",
+      "minCount": 1,
+      "note": "a flee state exists"
+    },
+    {
+      "file": "*",
+      "pattern": "(0\\.2|20\\s*%|/\\s*5\\b|\\bfleeThreshold\\b)",
+      "note": "a 20% threshold"
+    },
+    {
+      "file": "*",
+      "pattern": "Health\\.(current|max)",
+      "minCount": 1,
+      "note": "reads the Health component"
+    }
+  ]
+}

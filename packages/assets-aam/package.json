@@ -1,0 +1,25 @@
+{
+  "name": "@gameable/assets-aam",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Optional AvatarOS Asset Manager adapter for remote asset resolution.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@gameable/assets": "0.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  }
+}

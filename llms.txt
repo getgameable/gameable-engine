@@ -1,0 +1,90 @@
+# Gameable Engine
+
+> Gameable Engine (`aos-gameable-engine`) is a browser game engine: gaussian-splat worlds rendered by three.js on WebGPU, with all game logic compiled to a WebAssembly component.
+
+Status: M0-M3 shipped. Building a game? Read one task bundle below, copy a template, edit src/game.ts, run `npm run dev`, follow one recipe. Never read the whole repository; never edit packages/*.
+
+## Bundles
+
+- [llms-fps.txt](llms-fps.txt): first-person shooter.
+- [llms-third-person.txt](llms-third-person.txt): third-person adventure.
+- [llms-three-character.txt](llms-three-character.txt): a character in a three.js app.
+- [llms-visit.txt](llms-visit.txt): a character page.
+- [llms-multiplayer.txt](llms-multiplayer.txt): rooms.
+- [llms-character.txt](llms-character.txt): splat characters.
+- [llms-mystery.txt](llms-mystery.txt): the mystery kit (templates/mystery).
+- [llms-survive.txt](llms-survive.txt): the survive kit.
+- [llms-hangout.txt](llms-hangout.txt): the hangout kit.
+- [llms-brawl.txt](llms-brawl.txt): the brawl kit.
+- [llms-steal.txt](llms-steal.txt): the steal kit.
+- [llms-collect.txt](llms-collect.txt): the collect kit.
+- [llms-full.txt](llms-full.txt): the core corpus, without the topics above.
+
+## Templates
+
+- [templates/brawl](templates/brawl/src/game.ts)
+- [templates/collect](templates/collect/src/game.ts)
+- [templates/fps](templates/fps/src/game.ts)
+- [templates/hangout](templates/hangout/src/game.ts)
+- [templates/mystery](templates/mystery/src/game.ts)
+- [templates/steal](templates/steal/src/game.ts)
+- [templates/survive](templates/survive/src/game.ts)
+- [templates/third-person](templates/third-person/src/game.ts)
+- [templates/visit](templates/visit/src/game.ts)
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): hard rules, commands, repository map.
+- [Overview](docs/index.md): what the engine is; the 60-second quickstart.
+- [Hello world with your Gameable character](docs/start/01-hello-world.md)
+- [Install](docs/start/01-install.md)
+- [Build your first FPS](docs/start/02-first-fps.md)
+- [Build your first adventure](docs/start/03-first-adventure.md)
+- [Ship it](docs/start/04-deploy.md)
+- [Make a multiplayer game](docs/start/05-make-a-multiplayer-game.md)
+
+## Concepts
+
+- [Concepts](docs/concepts/index.md): Gameable Engine splits a game in two…
+- [The engine loop](docs/concepts/engine-loop.md): The host runs a single…
+- [Engine modules](docs/concepts/modules.md): Every host subsystem is an EngineModule:
+- [Assets and the manifest](docs/concepts/assets.md): All content is declared in an…
+- [The wasm game-logic boundary](docs/concepts/wasm-boundary.md): All game logic is TypeScript compiled to…
+- [ECS and game code](docs/concepts/ecs.md): bitecs 0.4 is the ECS and it lives…
+- [Gaussian splats](docs/concepts/splats.md): Worlds are gaussian splats rendered by…
+- [Animation](docs/concepts/animation.md): A character is animated by one object.…
+- [Physics](docs/concepts/physics.md): Physics is Jolt (jolt-physics 1.1, wasm)…
+
+## Packages
+
+- [@gameable/animation](packages/animation/README.md)
+- [@gameable/assets](packages/assets/README.md)
+- [@gameable/assets-aam](packages/assets-aam/README.md)
+- [@gameable/assets-aosrig](packages/assets-aosrig/README.md)
+- [@gameable/assets-placeholder](packages/assets-placeholder/README.md)
+- [@gameable/audio](packages/audio/README.md)
+- [@gameable/cli](packages/cli/README.md)
+- [@gameable/conversation](packages/conversation/README.md)
+- [@gameable/core](packages/core/README.md)
+- [@gameable/create-gameable](packages/create-gameable/README.md)
+- [@gameable/gameable](packages/gameable/README.md)
+- [@gameable/input](packages/input/README.md)
+- [@gameable/physics-jolt](packages/physics-jolt/README.md)
+- [@gameable/sdk](packages/sdk/README.md)
+- [@gameable/splat](packages/splat/README.md)
+- [@gameable/test-harness](packages/test-harness/README.md)
+- [@gameable/vite-plugin-gameable](packages/vite-plugin-gameable/README.md)
+- [@gameable/voice](packages/voice/README.md)
+- [@gameable/wasm-host](packages/wasm-host/README.md)
+
+## Schemas
+
+- [Gameable Engine asset manifest](docs/schemas/assets.schema.json): JSON Schema, draft 2020-12.
+- [Gameable Engine prefab](docs/schemas/prefab.schema.json): JSON Schema, draft 2020-12.
+
+## Reference
+
+- [Recipes](docs/recipes/index.md): every recipe, by genre.
+- [Troubleshooting](docs/troubleshooting.md): symptom-first fixes.
+- [Glossary](docs/glossary.md): project-specific terms.
+- [API reference](docs/api/): TypeDoc markdown; run `npm run docs:api`.

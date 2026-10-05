@@ -1,0 +1,32 @@
+{
+  "name": "@gameable/example-mystery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Mystery kit: three to six players, a secret \"it\", tag-outs, votes and chat.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build:guest": "node scripts/build-guest.mjs",
+    "build": "npm run build:guest && vite build",
+    "build:direct": "vite build --mode direct",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "gameable": "*",
+    "jolt-physics": "1.1.0",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "1.33.0",
+    "@types/node": "26.5.1",
+    "@types/three": "0.186.0",
+    "@webgpu/types": "0.1.72",
+    "componentize-qjs": "0.4.4",
+    "jsdom": "29.1.1",
+    "typescript": "6.0.3",
+    "vite": "8.3.0",
+    "vitest": "5.0.0"
+  }
+}

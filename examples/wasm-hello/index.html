@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content"
+    />
+    <title>Made with Gameable — hello world</title>
+    <link id="favicon" rel="icon" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <canvas id="canvas" aria-label="Animated Gameable character"></canvas>
+    <a
+      class="brand gm-card glass"
+      href="https://engine.gameable.com/"
+      aria-label="Made with Gameable — engine documentation"
+    >
+      <img id="gameable-logo" width="40" height="40" alt="" />
+      <span><small>Made with</small><strong>Gameable</strong></span>
+    </a>
+    <div class="gm-chip metrics" aria-label="Rendering performance">
+      <span id="fps">—</span> FPS
+    </div>
+    <p id="status" class="load-status" role="status">Loading your Gameable character…</p>
+    <section id="conversation" class="conversation" aria-label="Talk to the character">
+      <div
+        id="history"
+        class="history"
+        role="log"
+        aria-label="Conversation history"
+        aria-live="polite"
+      ></div>
+      <div class="gm-card glass chat">
+        <div class="chat-heading">
+          <span id="talk-status" role="status">Say hello to your character</span
+          ><button id="wave" class="gm-pill" disabled>Wave</button>
+        </div>
+        <p id="talk-error" class="gm-error" role="alert" hidden></p>
+        <form id="question" class="question">
+          <label class="sr-only" for="question-text">Message the character</label>
+          <input
+            id="question-text"
+            class="gm-input"
+            autocomplete="off"
+            maxlength="4096"
+            placeholder="Start a conversation, then say hello…"
+            disabled
+          />
+          <button id="send" class="gm-pill" type="submit" disabled>Send</button>
+        </form>
+        <div id="mic-wave" class="mic-wave" role="status" aria-label="Microphone input" hidden>
+          <canvas id="waveform" width="600" height="36" aria-hidden="true"></canvas
+          ><span id="mic-status">Listening</span>
+        </div>
+        <div class="actions">
+          <button id="connect" class="gm-pill primary" disabled>Start conversation</button>
+          <button id="microphone" class="gm-pill" aria-pressed="false" disabled>
+            Microphone off
+          </button>
+          <button id="interrupt" class="gm-pill" hidden>Interrupt</button>
+        </div>
+      </div>
+    </section>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

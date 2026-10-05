@@ -1,0 +1,37 @@
+# A non-JavaScript gameable guest.
+#
+# `cargo build --release --target wasm32-wasip2` is the whole build: rustc
+# links with `wasm-component-ld`, which wraps the core module into a component
+# for you. There is no `cargo-component`, and no `wasm-tools component new`
+# step.
+[package]
+name = "aos-guest-rust"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "An gameable game-module guest written in Rust"
+license = "UNLICENSED"
+
+# This crate is deliberately its own cargo workspace root: the repository is an
+# npm workspace, not a cargo one, and an empty `[workspace]` stops cargo from
+# walking up F:/work looking for a parent manifest.
+[workspace]
+
+[lib]
+# A component guest is a cdylib: no `main`, exports resolved by the linker.
+crate-type = ["cdylib"]
+
+[dependencies]
+# The plain bindings generator. `wit_bindgen::generate!` reads the repository's
+# own `wit/` at compile time, so there is no vendored copy to keep in sync.
+wit-bindgen = "0.62.0"
+
+[profile.release]
+# Size matters more than the last few percent of speed for a guest that is
+# downloaded by a browser. These four lines take the component from ~120 KB to
+# well under half that.
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

@@ -1,0 +1,52 @@
+{
+  "name": "@gameable/sdk",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The only package game code imports: defineGame, ECS, built-in systems and host facades.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./prelude": {
+      "gameable-source": "./src/prelude.ts",
+      "types": "./dist/prelude.d.ts",
+      "import": "./dist/prelude.js"
+    },
+    "./keycodes": {
+      "gameable-source": "./src/keycodes.ts",
+      "types": "./dist/keycodes.d.ts",
+      "import": "./dist/keycodes.js"
+    },
+    "./wire": {
+      "gameable-source": "./src/wire.ts",
+      "types": "./dist/wire.d.ts",
+      "import": "./dist/wire.js"
+    },
+    "./wit/entry": {
+      "gameable-source": "./src/wit/entry.ts",
+      "types": "./dist/wit/entry.d.ts",
+      "import": "./dist/wit/entry.js"
+    },
+    "./package.json": "./package.json",
+    "./wit/*.wit": "./dist/wit/*.wit"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown && node scripts/copy-wit.mjs",
+    "gen:wit": "node scripts/gen-wit-types.mjs",
+    "check:wit": "node scripts/gen-wit-types.mjs --check"
+  },
+  "dependencies": {
+    "bitecs": "0.4.0"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "1.33.0"
+  }
+}

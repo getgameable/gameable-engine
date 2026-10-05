@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gameable.avataros.dev/schemas/assets.schema.json",
+  "title": "Gameable Engine asset manifest",
+  "description": "assets.json: the string-id contract between game logic (guest) and the host. Game code refers to assets by id only; the host resolves ids to bytes.",
+  "type": "object",
+  "required": ["version", "assets"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema so editors can validate and autocomplete the manifest."
+    },
+    "version": {
+      "description": "Manifest schema version. 1 is the only value today.",
+      "type": "integer",
+      "enum": [1]
+    },
+    "baseUrl": {
+      "description": "Prefix joined to every relative asset src. Defaults to the manifest's own directory.",
+      "type": "string"
+    },
+    "assets": {
+      "description": "Every asset the game can reference, keyed by a unique id.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": ["id", "type", "src"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable identifier used by game logic. Renaming an id is a breaking change.",
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "type": {
+          "description": "What the host should load this as.",
+          "type": "string",
+          "enum": ["splat", "gltf", "character", "audio"]
+        },
+        "src": {
+          "description": "Relative path (resolved against baseUrl) or absolute URL. Never seen by game logic.",
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "description": "Free-form labels for grouping and for preload policies.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "collider": {
+          "$ref": "#/$defs/collider"
+        },
+        "rig": {
+          "$ref": "#/$defs/rig"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "character"
+              }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["rig"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": ["audio", "splat"]
+              }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "not": {
+              "required": ["rig"]
+            }
+          }
+        }
+      ]
+    },
+    "collider": {
+      "description": "Static collision proxy registered with the physics module when the asset loads.",
+      "type": "object",
+      "required": ["shape"],
+      "additionalProperties": false,
+      "properties": {
+        "shape": {
+          "type": "string",
+          "enum": ["mesh", "box", "sphere", "capsule", "convex-hull", "heightfield"]
+        },
+        "src": {
+          "description": "Path to collision geometry, for shapes that need their own mesh.",
+          "type": "string"
+        },
+        "halfExtents": {
+          "$ref": "#/$defs/vec3"
+        },
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/vec3"
+        },
+        "layer": {
+          "description": "Physics layer this collider belongs to.",
+          "type": "string",
+          "enum": ["static", "dynamic", "trigger"],
+          "default": "static"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "box"
+              }
+            },
+            "required": ["shape"]
+          },
+          "then": {
+            "required": ["halfExtents"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "sphere"
+              }
+            },
+            "required": ["shape"]
+          },
+          "then": {
+            "required": ["radius"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "capsule"
+              }
+            },
+            "required": ["shape"]
+          },
+          "then": {
+            "required": ["radius", "height"]
+          }
+        }
+      ]
+    },
+    "rig": {
+      "description": "Character rig configuration. Swapping backend must not require any other change.",
+      "type": "object",
+      "required": ["backend"],
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "description": "Which RigBackend drives the character. 'skinned' means src is itself a glTF/GLB with JOINTS_0/WEIGHTS_0 and embedded clips, and needs no pack.",
+          "type": "string",
+          "enum": ["orl", "gnm", "skinned", "aosrig-splat"]
+        },
+        "pack": {
+          "description": "Path to the baked .aosrig pack, for backends that need one (gnm).",
+          "type": "string"
+        },
+        "controlNames": {
+          "description": "Ordered rig control names; the index is the wire format.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "vertexCount": {
+          "description": "Vertices the rig stage produces per frame.",
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "clips": {
+          "description": "More clip files the character plays besides its own (aosrig-splat version 2: files of its clips.json format), each resolved like pack.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "expressionSpace": {
+          "type": "object",
+          "required": ["kind", "dim"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["arkit52", "gnm", "gnm68"]
+            },
+            "dim": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "segments": {
+              "description": "Named contiguous spans of the expression vector.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "offset", "length"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "length": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            },
+            "arkitMap": {
+              "description": "Path to an ARKit-52 -> this-space mapping, when kind is not arkit52.",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "backend": {
+                "const": "gnm"
+              }
+            },
+            "required": ["backend"]
+          },
+          "then": {
+            "required": ["pack"]
+          }
+        }
+      ]
+    },
+    "vec3": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    }
+  },
+  "examples": [
+    {
+      "version": 1,
+      "baseUrl": "/assets/",
+      "assets": [
+        {
+          "id": "arena",
+          "type": "splat",
+          "src": "arena.spz",
+          "tags": ["world"],
+          "collider": {
+            "shape": "mesh",
+            "src": "arena.collider.glb",
+            "layer": "static"
+          }
+        },
+        {
+          "id": "shot",
+          "type": "audio",
+          "src": "sfx/shot.ogg",
+          "tags": ["sfx"]
+        },
+        {
+          "id": "npc-myra",
+          "type": "character",
+          "src": "characters/myra/scene.json",
+          "rig": {
+            "backend": "gnm",
+            "pack": "characters/myra/gnm_head.aosrig",
+            "vertexCount": 17821,
+            "expressionSpace": {
+              "kind": "gnm",
+              "dim": 387
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

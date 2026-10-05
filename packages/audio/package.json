@@ -1,0 +1,27 @@
+{
+  "name": "@gameable/audio",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WebAudio buses, one-shot playback and positional emitters.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./testing": {
+      "gameable-source": "./src/testing/fakeAudioContext.ts",
+      "types": "./dist/testing/fakeAudioContext.d.ts",
+      "import": "./dist/testing/fakeAudioContext.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  }
+}

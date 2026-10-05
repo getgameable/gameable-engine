@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    // Resolve the workspace packages to their TypeScript sources, exactly as the dev
+    // server does through the `gameable()` plugin's `gameable-source` condition.
+    "customConditions": ["gameable-source"],
+    // The placeholder ARKit idle clip is imported as JSON: 38 KB of blendshape frames,
+    // bundled rather than fetched, so the example has no runtime asset path to configure.
+    "resolveJsonModule": true,
+    "types": ["vite/client", "@webgpu/types", "node"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

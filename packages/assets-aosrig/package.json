@@ -1,0 +1,27 @@
+{
+  "name": "@gameable/assets-aosrig",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The aosrig_v0 sample character: one 114-joint skinned GLB with idle, walk, run and wave.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./assets/*": "./assets/*"
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@gameable/assets": "0.0.0"
+  },
+  "files": [
+    "dist",
+    "assets"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  }
+}

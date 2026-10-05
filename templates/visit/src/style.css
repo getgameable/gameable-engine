@@ -1,0 +1,345 @@
+/* Gameable tokens from STYLE.md; the chat panel is the hello world's (examples/wasm-hello). */
+:root {
+  --canvas: #141519;
+  --s1: #1c1d22;
+  --s2: #24252b;
+  --border: #2e2f36;
+  --text: #f2f2f4;
+  --muted: #9a9ba3;
+  --dim: #5f6069;
+  --mint: #74ecc6;
+  --onmint: #0e1f1a;
+  --pink: #ff7ab8;
+  --glass: rgba(28, 29, 34, 0.6);
+  --float: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --edge: 28px;
+  color-scheme: dark;
+  font: 500 14px/1.5 var(--font);
+  color: var(--text);
+  background: var(--canvas);
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  position: fixed;
+  inset: 0;
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] {
+  display: none !important;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: var(--text);
+}
+button:disabled {
+  cursor: default;
+  color: var(--dim);
+  background: var(--s1);
+}
+:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+/* The page behind the canvas while it starts (the white world paints its own white over it). */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 38%, #2a2c33 0%, #1b1c21 55%, var(--canvas) 100%);
+}
+#canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+.gm-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+}
+.gm-chip,
+.gm-pill {
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--s2);
+  font-weight: 700;
+}
+.gm-chip {
+  font-size: 12px;
+  padding: 7px 12px;
+}
+.gm-pill {
+  font-size: 13px;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+.gm-pill:hover:not(:disabled) {
+  border-color: #3a3b44;
+}
+.gm-pill.primary:not(:disabled),
+.gm-pill[aria-pressed='true'] {
+  background: var(--mint);
+  color: var(--onmint);
+  border-color: var(--mint);
+}
+.gm-pill[data-starting='true'] {
+  border-color: var(--mint);
+}
+.gm-error {
+  margin: 0;
+  color: var(--pink);
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* Who this is, what to do, and how far the load has got. */
+.who {
+  position: fixed;
+  top: var(--edge);
+  left: var(--edge);
+  max-width: min(360px, calc(100% - 2 * var(--edge)));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+}
+.who strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.who span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.loading {
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: var(--s2);
+  overflow: hidden;
+}
+.loading i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--mint);
+  transition: width 0.3s ease;
+}
+.who .gm-error {
+  margin-top: 6px;
+}
+
+/* Hangout on a touch screen: a thumb stick that presses the walking keys. */
+.stick {
+  position: fixed;
+  left: var(--edge);
+  bottom: calc(var(--edge) + var(--panel, 200px) + 12px + env(safe-area-inset-bottom, 0px));
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 1.5px solid var(--border);
+  backdrop-filter: blur(10px);
+  touch-action: none;
+}
+.stick i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: var(--mint);
+  opacity: 0.85;
+  transform: translate(var(--sx, 0px), var(--sy, 0px));
+}
+
+/* Talking: the hello world's panel. */
+.conversation {
+  position: fixed;
+  width: min(620px, calc(100% - 2 * var(--edge)));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px));
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--float);
+}
+.chat-heading,
+.question,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-heading {
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+.actions {
+  flex-wrap: wrap;
+}
+.gm-input {
+  background: var(--canvas);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 12px;
+  font-size: 14px;
+  min-width: 0;
+  flex: 1;
+}
+.gm-input::placeholder {
+  color: var(--dim);
+}
+.gm-input:focus {
+  border-color: #3a3b44;
+}
+.history {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-height: 22dvh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  margin-bottom: 10px;
+}
+.history:empty {
+  display: none;
+}
+.history p {
+  margin: 0;
+  max-width: 85%;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px 14px;
+  overflow-wrap: anywhere;
+}
+.history .player {
+  align-self: flex-end;
+  background: var(--s2);
+}
+.history strong {
+  display: block;
+  font-size: 12px;
+  color: var(--mint);
+}
+.mic-wave {
+  position: relative;
+  height: 36px;
+  color: var(--mint);
+}
+.mic-wave canvas {
+  width: 100%;
+  height: 36px;
+  display: block;
+}
+.mic-wave span {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  background: var(--s1);
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.brand {
+  position: fixed;
+  right: var(--edge);
+  top: var(--edge);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+@media (max-width: 760px) {
+  :root {
+    --edge: 14px;
+  }
+  .who {
+    padding: 10px 14px;
+    max-width: calc(100% - 2 * var(--edge) - 44px);
+  }
+  .who strong {
+    font-size: 17px;
+  }
+  /* On a phone the brand is the mark alone. */
+  .brand {
+    font-size: 0;
+    gap: 0;
+    padding: 9px;
+  }
+  .conversation {
+    width: calc(100% - 2 * var(--edge));
+  }
+  .chat {
+    padding: 12px;
+    gap: 8px;
+  }
+  .gm-input {
+    font-size: 16px;
+  }
+  .gm-pill {
+    padding: 8px 12px;
+  }
+  .history {
+    max-height: 18dvh;
+  }
+  :root[data-keyboard] .history {
+    max-height: 14dvh;
+  }
+  :root[data-keyboard] .chat-heading {
+    display: none;
+  }
+}
+
+/* The white world (no place): the page is white under the canvas too, so nothing dark flashes at its edges, and
+   the cards are near-solid (their see-through dark reads as grey on white, and their quiet words were lost). */
+html.white-world,
+html.white-world .backdrop {
+  background: #ffffff;
+}
+html.white-world {
+  --glass: rgba(28, 29, 34, 0.92);
+  --float: 0 18px 50px rgba(0, 0, 0, 0.18);
+}

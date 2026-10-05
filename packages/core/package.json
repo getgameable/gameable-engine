@@ -1,0 +1,38 @@
+{
+  "name": "@gameable/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Engine host: fixed-step loop, module registry, scene, cameras, asset registry, debug overlay.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./render": {
+      "gameable-source": "./src/render.ts",
+      "types": "./dist/render.d.ts",
+      "import": "./dist/render.js"
+    },
+    "./headless": {
+      "gameable-source": "./src/headless.ts",
+      "types": "./dist/headless.d.ts",
+      "import": "./dist/headless.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@gameable/assets": "0.0.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  }
+}

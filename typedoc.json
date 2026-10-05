@@ -1,0 +1,75 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+
+  // One documented module per workspace package, named by its package.json
+  // name, so `docs/api/@gameable.core.md` is `@gameable/core`. Each package is
+  // converted against its *own* tsconfig, which is what supplies the right
+  // `types` (node, @webgpu/types) per package; a single shared tsconfig gets
+  // `process` and `node:fs` wrong in `vite-plugin-gameable` and `cli`.
+  "entryPoints": ["packages/*"],
+  "entryPointStrategy": "packages",
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"],
+    "exclude": ["**/three-fork/**", "**/node_modules/**", "**/*.test.ts"],
+    "readme": "none",
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "excludeExternals": true,
+    "disableSources": true,
+    "sort": ["kind", "alphabetical"],
+    "validation": {
+      "notExported": false,
+      "invalidLink": true,
+      "notDocumented": false,
+      "rewrittenLink": true,
+      "unusedMergeModuleWith": true
+    }
+  },
+
+  // `src/three-fork/` is three.js's own `GaussianSplat.js` plus six marked
+  // insertions, byte-verified against the pinned upstream by
+  // `packages/splat/scripts/diff-upstream.mjs`. Its TSDoc is three's, and it
+  // carries ~118 `{@link}`s into three's own class tree that cannot resolve
+  // here. Rewriting them would break the upstream diff, so the fork is excluded
+  // from the API pages instead; `@gameable/splat`'s README and
+  // `src/three-fork/UPSTREAM.md` document it.
+  "exclude": ["**/three-fork/**", "**/node_modules/**", "**/*.test.ts"],
+
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "tsconfig": "tsconfig.typedoc.json",
+  "readme": "none",
+  "githubPages": false,
+  "hideGenerator": true,
+  "disableSources": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "sort": ["kind", "alphabetical"],
+  "categorizeByGroup": true,
+
+  // Dead `{@link}`s are a docs bug, the same way dead markdown links are.
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false,
+    "rewrittenLink": true,
+    "unusedMergeModuleWith": true
+  },
+  "treatValidationWarningsAsErrors": true,
+
+  // typedoc-plugin-markdown: one flat file per package, no HTML, no
+  // breadcrumbs, so VitePress renders it like any other page.
+  "outputFileStrategy": "modules",
+  "flattenOutputFiles": true,
+  "entryFileName": "index",
+  "fileExtension": ".md",
+  "useCodeBlocks": true,
+  "expandObjects": false,
+  "hidePageHeader": true,
+  "hideBreadcrumbs": true,
+  "parametersFormat": "table",
+  "propertiesFormat": "list",
+  "enumMembersFormat": "table",
+  "typeDeclarationFormat": "list"
+}

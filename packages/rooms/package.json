@@ -1,0 +1,49 @@
+{
+  "name": "@gameable/rooms",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Multiplayer rooms for Gameable Engine on Colyseus: the authoritative room server and its client.",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "gameable-source": "./src/server/index.ts",
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    },
+    "./client": {
+      "gameable-source": "./src/client/index.ts",
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    },
+    "./testing": {
+      "gameable-source": "./src/server/testing/index.ts",
+      "types": "./dist/server/testing/index.d.ts",
+      "import": "./dist/server/testing/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@gameable/core": "0.0.0",
+    "@gameable/net": "0.0.0",
+    "@gameable/sdk": "0.0.0",
+    "@colyseus/core": "0.18.18",
+    "@colyseus/sdk": "0.18.4",
+    "@colyseus/ws-transport": "0.18.4",
+    "express": "5.2.1"
+  },
+  "devDependencies": {
+    "rolldown": "1.2.8"
+  },
+  "private": true
+}

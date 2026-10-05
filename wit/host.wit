@@ -1,0 +1,64 @@
+package gameable:engine@0.2.0;
+
+/// Ambient services. Cheap, pure, always available.
+interface env {
+  use types.{log-level};
+
+  /// Route a guest message to the host logger. The SDK wires `console.*` here,
+  /// because QuickJS has no `console` global.
+  log: func(level: log-level, msg: string);
+
+  /// Deterministic run seed. Call this from `game.init` and seed the game RNG
+  /// from it: QuickJS's own `Math.random` state is frozen into the Wizer
+  /// snapshot and is therefore identical on every instantiation.
+  seed: func() -> u64;
+
+  /// Monotonic wall time in milliseconds since engine start. For profiling and
+  /// non-deterministic UI only: never feed this into simulation.
+  now-ms: func() -> f64;
+}
+
+/// Synchronous physics queries. These are the ONLY blocking host calls the
+/// guest may make during `tick`; everything else is a deferred command.
+/// Keep them rare - each one is a full canonical-ABI round trip.
+interface physics-query {
+  use types.{vec3, query-filter, ray-query, ray-hit, overlap-hit};
+
+  /// Closest hit along the ray, or none.
+  raycast: func(
+    origin: vec3,
+    direction: vec3,
+    max-distance: f32,
+    filter: query-filter
+  ) -> option<ray-hit>;
+
+  /// One round trip for many rays. Result is positional: index `i` is the
+  /// result for `rays[i]`. Prefer this over a loop of `raycast`.
+  raycast-batch: func(rays: list<ray-query>) -> list<option<ray-hit>>;
+
+  /// Bodies overlapping a sphere, nearest first, capped at `max-results`.
+  overlap-sphere: func(
+    center: vec3,
+    radius: f32,
+    filter: query-filter,
+    max-results: u32
+  ) -> list<overlap-hit>;
+}
+
+/// Manifest lookups. INIT-TIME ONLY: resolve every name you need in
+/// `game.init` and cache the `asset-id`s. Calling these from `tick` is legal
+/// but wasteful and is linted against in the SDK.
+interface assets {
+  use types.{asset-id, asset-desc};
+
+  /// Manifest string id -> handle, or none if the manifest has no such entry.
+  ///
+  /// NOTE: deliberately NOT called `resolve`. jco 1.33 lifts every import into
+  /// a module-scope `const { <fn> } = imports[...]` and its own runtime already
+  /// declares `let promise, resolve, reject;` at module scope, so a WIT import
+  /// named `resolve` makes the transpiled JS fail to parse.
+  resolve-id: func(name: string) -> option<asset-id>;
+
+  /// Metadata for a handle, or none if the handle is unknown.
+  describe: func(id: asset-id) -> option<asset-desc>;
+}

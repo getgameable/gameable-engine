@@ -1,0 +1,26 @@
+{
+  "name": "@gameable/vite-plugin-gameable",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vite plugin: wasm and top-level await, the gameable-source condition, manifest validation, guest HMR.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepare": "tsdown"
+  },
+  "peerDependencies": {
+    "vite": ">=6"
+  }
+}

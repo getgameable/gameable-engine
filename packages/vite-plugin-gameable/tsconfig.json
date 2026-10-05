@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // The plugin reads the transpiled guest off disk and consults `process.env`,
+    // so it needs the node globals.
+    "types": ["@webgpu/types", "node"]
+  },
+  "include": ["src"]
+}

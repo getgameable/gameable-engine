@@ -1,0 +1,18 @@
+{
+  "name": "@gameable/llm-eval",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Can a small model, given only the repo docs, make a working game change? The harness that measures it.",
+  "license": "MIT",
+  "scripts": {
+    "eval": "node src/run.ts",
+    "dry-run": "node src/run.ts --dry-run",
+    "triage": "node src/triage.ts",
+    "test": "vitest run -c vitest.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "0.125.0"
+  }
+}

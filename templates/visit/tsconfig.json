@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    // Resolve the workspace packages to their TypeScript sources, exactly as the
+    // dev server does through the plugin's `resolve.conditions`.
+    "customConditions": ["gameable-source"],
+    "types": ["vite/client", "@webgpu/types", "node"]
+  },
+  "include": ["src", "tests", "scripts", "vite.config.ts", "vitest.config.ts"]
+}

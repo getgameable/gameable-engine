@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "dist",
+    // See packages/test-harness/tsconfig.json: the root typecheck is
+    // `tsc -b --noEmit`, which cannot build a referenced project (TS6310), so
+    // the SDK is mapped onto its sources instead of referenced.
+    "paths": {
+      "@gameable/sdk": ["../sdk/src/index.ts"],
+      "@gameable/sdk/keycodes": ["../sdk/src/keycodes.ts"],
+      "@gameable/sdk/prelude": ["../sdk/src/prelude.ts"],
+      "@gameable/sdk/wire": ["../sdk/src/wire.ts"]
+    }
+  },
+  "include": ["src", "../sdk/src/*.ts", "../sdk/src/net/*.ts", "../sdk/src/guest/*.ts", "../sdk/src/data/*.ts"]
+}

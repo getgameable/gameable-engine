@@ -1,0 +1,4 @@
+# A GNM rig pack copied here by hand turns the guide NPC into a real splat head
+# under `?gnm=1`. Not committed: the source head is licensed data, and even the
+# truncated pack is 7.8 MB. See "Give the guide a face" in README.md.
+public/generated/

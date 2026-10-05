@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+# Binary asset formats tracked with Git LFS.
+
+# The wasm-hello demo character travels with clean docs deployment checkouts.
+
+# Test fixtures stay in git proper: they must survive a clone without LFS.
+tests/fixtures/** -filter -diff -merge text=auto
+fixtures/**       -filter -diff -merge text=auto
+packages/character/test/fixtures/aosrig-splat/*.ply -filter -diff -merge -text
+packages/character/test/fixtures/aosrig-splat/*.bin -filter -diff -merge -text

@@ -1,0 +1,25 @@
+{
+  "id": "second-enemy-wave",
+  "title": "Spawn a second wave when the arena is cleared",
+  "template": "fps",
+  "prompt": "Instead of winning immediately when the last enemy dies, spawn a second wave of three enemies at the same spawn points. The player only wins once the second wave is also cleared. Show which wave is in progress on the HUD.",
+  "expectedFiles": ["src/game.ts", "src/hud.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "wave",
+      "minCount": 3,
+      "note": "a wave concept exists"
+    },
+    {
+      "file": "*",
+      "pattern": "spawn\\(",
+      "note": "enemies are spawned again"
+    },
+    {
+      "file": "*",
+      "pattern": "hud\\.set",
+      "note": "the wave reaches the HUD"
+    }
+  ]
+}

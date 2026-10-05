@@ -1,0 +1,34 @@
+{
+  "name": "@gameable/gameable-character",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A character published from the Gameable studio, in your own three.js scene: one call, no engine.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "GUIDE.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../docs/three/gameable-character.md', 'GUIDE.md')\"",
+    "test": "vitest run --root ../.. packages/gameable-character"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "devDependencies": {
+    "@gameable/animation": "0.0.0",
+    "@gameable/character": "0.0.0",
+    "@gameable/core": "0.0.0",
+    "@gameable/splat": "0.0.0"
+  }
+}

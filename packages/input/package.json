@@ -1,0 +1,29 @@
+{
+  "name": "@gameable/input",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Keyboard, mouse, pointer lock, gamepad and touch into packed bitsets and named actions.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "jsdom": "29.1.1"
+  },
+  "dependencies": {
+    "@gameable/core": "0.0.0",
+    "@gameable/sdk": "0.0.0"
+  }
+}

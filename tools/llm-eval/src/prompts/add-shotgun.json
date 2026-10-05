@@ -1,0 +1,31 @@
+{
+  "id": "add-shotgun",
+  "title": "Add a shotgun that fires 5 pellets",
+  "template": "fps",
+  "prompt": "Add a shotgun to the weapon system. One trigger pull fires 5 pellets instead of a single hitscan ray: each pellet is its own raycast with a small random spread around the aim direction, and each pellet that connects does its own damage. Put the pellet count and the spread angle in the game rules so they can be tuned in one place. Keep the existing fire rate, magazine and reload behaviour working.",
+  "expectedFiles": ["src/systems/weapon.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "\\b(pellet|pellets)\\b",
+      "minCount": 2,
+      "note": "the change is actually about pellets"
+    },
+    {
+      "file": "*",
+      "pattern": "(pellets?\\s*[:=]\\s*5|\\b5\\b)",
+      "note": "five pellets per shot"
+    },
+    {
+      "file": "*",
+      "pattern": "raycast",
+      "minCount": 1,
+      "note": "still hitscan, via physics.raycast"
+    },
+    {
+      "file": "*",
+      "pattern": "spread",
+      "note": "a spread angle exists"
+    }
+  ]
+}

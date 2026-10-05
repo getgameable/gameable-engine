@@ -1,0 +1,74 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/animation"
+    },
+    {
+      "path": "./packages/assets"
+    },
+    {
+      "path": "./packages/assets-aam"
+    },
+    {
+      "path": "./packages/assets-aosrig"
+    },
+    {
+      "path": "./packages/assets-placeholder"
+    },
+    {
+      "path": "./packages/audio"
+    },
+    {
+      "path": "./packages/character"
+    },
+    {
+      "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/conversation"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/create-gameable"
+    },
+    {
+      "path": "./packages/gameable"
+    },
+    {
+      "path": "./packages/gameable-character"
+    },
+    {
+      "path": "./packages/input"
+    },
+    {
+      "path": "./packages/net"
+    },
+    {
+      "path": "./packages/physics-jolt"
+    },
+    {
+      "path": "./packages/rooms"
+    },
+    {
+      "path": "./packages/sdk"
+    },
+    {
+      "path": "./packages/splat"
+    },
+    {
+      "path": "./packages/test-harness"
+    },
+    {
+      "path": "./packages/vite-plugin-gameable"
+    },
+    {
+      "path": "./packages/voice"
+    },
+    {
+      "path": "./packages/wasm-host"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // The package ships a node tool (`tools/retarget_locomotion.mjs`) and its
+    // tests read the shipped bone table off disk, so node's built-in module
+    // types are needed alongside the base `@webgpu/types`. No `src/` module
+    // that the browser loads imports a node builtin.
+    "types": ["@webgpu/types", "node"]
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "2",
+  "subject": "myra",
+  "mode": "multi_region",
+  "rig_dim": 168,
+  "num_poses": 30,
+  "world_scale": 1.0,
+  "moment_scale": 0.0,
+  "order": [
+    "head",
+    "eyes"
+  ],
+  "trunks": {
+    "head": "trunk_head.onnx"
+  },
+  "rig_dims": {
+    "head": 168
+  },
+  "branches": {
+    "head": {
+      "geom": "geom_head.onnx",
+      "appr": "appr_head.onnx",
+      "trunk": "trunk_head.onnx",
+      "rig_dim": 168,
+      "mesh_bin": "mesh_head.bin",
+      "mesh_json": "mesh_head.json",
+      "uv_res": 256,
+      "scale_log_bias": 0.0,
+      "frame_vertices": "frame_vertices_head.bin",
+      "rig_presets": "rig_params_head.npy"
+    },
+    "eyes": {
+      "gaze_conditioned": true,
+      "mesh_glb": "head_eyes.glb",
+      "mesh_json": "head_eyes.json",
+      "trunk": "trunk_eye.onnx",
+      "geom": "geom_eye.onnx",
+      "appr": "appr_eye.onnx",
+      "uv_res": 96,
+      "statics": {
+        "left_json": "eye_static_left.json",
+        "left_bin": "eye_static_left.bin",
+        "right_json": "eye_static_right.json",
+        "right_bin": "eye_static_right.bin",
+        "meta": "eye_meta.json"
+      }
+    }
+  },
+  "rig_presets_head": "rig_params_head.npy"
+}

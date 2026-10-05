@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "dist",
+    // `@gameable/sdk` is a sibling workspace package. Project references are
+    // the usual answer, but the root typecheck is `tsc -b --noEmit`, which
+    // refuses to build a referenced project (TS6310). Mapping the package
+    // specifier onto the SDK sources and including them in this program gives
+    // the same type safety with no reference edge.
+    "paths": {
+      "@gameable/sdk": ["../sdk/src/index.ts"],
+      "@gameable/sdk/keycodes": ["../sdk/src/keycodes.ts"],
+      "@gameable/sdk/prelude": ["../sdk/src/prelude.ts"],
+      "@gameable/sdk/wire": ["../sdk/src/wire.ts"]
+    }
+  },
+  "include": ["src", "../sdk/src/*.ts", "../sdk/src/net/*.ts", "../sdk/src/guest/*.ts", "../sdk/src/data/*.ts"]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "tp-npc-dialogue-line",
+  "title": "Third person: give an NPC a new dialogue line",
+  "template": "third-person",
+  "skipUntilTemplate": true,
+  "prompt": "Give the NPC a second line of dialogue that only appears after the player has spoken to them once. Keep the first line as the opener.",
+  "expectedFiles": ["src/systems/dialogue.ts", "src/dialogue.json"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "dialogue",
+      "minCount": 1,
+      "note": "the dialogue data or system changed"
+    }
+  ]
+}

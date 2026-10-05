@@ -1,0 +1,31 @@
+{
+  "name": "create-gameable",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "description": "npm create gameable — copies a template and wires up a new game.",
+  "license": "MIT",
+  "bin": {
+    "create-gameable": "./bin/create-gameable.mjs"
+  },
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "sync:templates": "node scripts/sync-templates.mjs",
+    "check:templates": "node scripts/sync-templates.mjs --check",
+    "prepack": "tsdown && node scripts/sync-templates.mjs",
+    "postpack": "node scripts/sync-templates.mjs --clean"
+  }
+}

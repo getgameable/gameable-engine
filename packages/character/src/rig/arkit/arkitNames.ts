@@ -1,0 +1,63 @@
+/**
+ * ARKit blendshape names in the exact order the server sends them (indices 0-51).
+ * Source: AvatarosWhisper/Private/AnimationFrameLiveLinkSource.cpp
+ *
+ * Lives in its own module so pure-logic consumers can read the canonical channel
+ * order without pulling in anything else.
+ *
+ * Ported from aos-threejs-poc/src/lib/arkitNames.js @ cdd63b10
+ */
+export const ARKIT_NAMES: string[] = [
+  'EyeBlinkLeft',
+  'EyeLookDownLeft',
+  'EyeLookInLeft',
+  'EyeLookOutLeft',
+  'EyeLookUpLeft',
+  'EyeSquintLeft',
+  'EyeWideLeft',
+  'EyeBlinkRight',
+  'EyeLookDownRight',
+  'EyeLookInRight',
+  'EyeLookOutRight',
+  'EyeLookUpRight',
+  'EyeSquintRight',
+  'EyeWideRight',
+  'JawForward',
+  'JawLeft',
+  'JawRight',
+  'JawOpen',
+  'MouthClose',
+  'MouthFunnel',
+  'MouthPucker',
+  'MouthLeft',
+  'MouthRight',
+  'MouthSmileLeft',
+  'MouthSmileRight',
+  'MouthFrownLeft',
+  'MouthFrownRight',
+  'MouthDimpleLeft',
+  'MouthDimpleRight',
+  'MouthStretchLeft',
+  'MouthStretchRight',
+  'MouthRollLower',
+  'MouthRollUpper',
+  'MouthShrugLower',
+  'MouthShrugUpper',
+  'MouthPressLeft',
+  'MouthPressRight',
+  'MouthLowerDownLeft',
+  'MouthLowerDownRight',
+  'MouthUpperUpLeft',
+  'MouthUpperUpRight',
+  'BrowDownLeft',
+  'BrowDownRight',
+  'BrowInnerUp',
+  'BrowOuterUpLeft',
+  'BrowOuterUpRight',
+  'CheekPuff',
+  'CheekSquintLeft',
+  'CheekSquintRight',
+  'NoseSneerLeft',
+  'NoseSneerRight',
+  'TongueOut',
+];

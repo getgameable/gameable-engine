@@ -1,0 +1,21 @@
+{
+  "id": "tp-sprint-locomotion",
+  "title": "Third person: sprint blends into the run animation",
+  "template": "third-person",
+  "skipUntilTemplate": true,
+  "prompt": "Let the player sprint while shift is held. The locomotion blend must follow: the character should blend from walk into run as the speed increases, rather than snapping between clips.",
+  "expectedFiles": ["src/systems/locomotion.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "sprint",
+      "minCount": 1,
+      "note": "a sprint concept exists"
+    },
+    {
+      "file": "*",
+      "pattern": "Shift",
+      "note": "the shift key is read"
+    }
+  ]
+}

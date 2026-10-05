@@ -1,0 +1,29 @@
+{
+  "name": "@gameable/assets-placeholder",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CC0 placeholder assets so the scaffolds run with zero LFS or configuration.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./assets/*": "./assets/*"
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@gameable/assets": "0.0.0"
+  },
+  "files": [
+    "dist",
+    "assets"
+  ],
+  "scripts": {
+    "generate": "node scripts/gen-arena.mjs && node scripts/gen-sfx.mjs && node scripts/gen-face.mjs",
+    "prebuild": "npm run generate",
+    "build": "tsdown"
+  }
+}

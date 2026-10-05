@@ -1,0 +1,61 @@
+{
+  "name": "gameable-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gameable Engine — browser game engine: gaussian-splat worlds, WebGPU, wasm game logic.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/*",
+    "templates/*",
+    "examples/*",
+    "fixtures/*"
+  ],
+  "overrides": {
+    "three": "0.186.0"
+  },
+  "scripts": {
+    "dev": "node -e \"console.log('use: npm run dev -w examples/splat-viewer')\"",
+    "build": "npm run -ws --if-present build",
+    "typecheck": "tsc -b --noEmit && node tools/typecheck-apps.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "predocs:api": "npm run generate -w packages/character",
+    "docs:api": "typedoc",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:games": "node tools/docs/build-games.mjs",
+    "docs:llms": "node tools/docs/gen-llms.mjs",
+    "docs:lint": "node tools/docs/lint.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run docs:lint",
+    "test:e2e": "playwright test -c tests/e2e/playwright.config.ts",
+    "test:boundary": "node -e \"process.env.GAMEABLE_BOUNDARY='1';process.exit(require('child_process').spawnSync('npx',['vitest','run','-c','tests/boundary/vitest.config.ts'],{stdio:'inherit',shell:true}).status??1)\"",
+    "test:e2e:wasm": "node -e \"process.env.GAMEABLE_E2E_WASM='1';process.exit(require('child_process').spawnSync('npx',['playwright','test','-c','tests/e2e/playwright.config.ts'],{stdio:'inherit',shell:true}).status??1)\"",
+    "test:llm-eval": "vitest run -c tools/llm-eval/vitest.config.ts",
+    "public:promote": "node tools/public/promote.mjs",
+    "public:check": "node tools/public/check.mjs",
+    "release:version": "node tools/release-version.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.5.1",
+    "@types/three": "0.186.0",
+    "@webgpu/types": "0.1.72",
+    "eslint": "10.10.0",
+    "eslint-plugin-jsdoc": "63.3.3",
+    "prettier": "3.9.6",
+    "three": "0.186.0",
+    "tsdown": "0.23.0",
+    "typedoc": "0.28.20",
+    "typedoc-plugin-markdown": "4.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vitepress": "1.6.4",
+    "vitest": "5.0.0"
+  }
+}

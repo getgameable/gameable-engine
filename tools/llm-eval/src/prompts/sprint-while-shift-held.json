@@ -1,0 +1,30 @@
+{
+  "id": "sprint-while-shift-held",
+  "title": "Sprint while shift is held",
+  "template": "fps",
+  "prompt": "Let the player sprint. While the shift key is held the player moves 1.8x faster. Put the sprint multiplier in the game rules. Sprinting must not change how fast the player falls or jumps.",
+  "expectedFiles": ["src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "Shift",
+      "note": "the shift key is read"
+    },
+    {
+      "file": "*",
+      "pattern": "sprint",
+      "minCount": 2,
+      "note": "a sprint concept exists"
+    },
+    {
+      "file": "*",
+      "pattern": "1\\.8",
+      "note": "the 1.8x multiplier"
+    },
+    {
+      "file": "*",
+      "pattern": "moveCharacter",
+      "note": "still goes through the character controller"
+    }
+  ]
+}

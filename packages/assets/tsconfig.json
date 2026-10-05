@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // `src/node.ts` (the `./node` entry) reads the game's node_modules; the rest stays browser code.
+    "types": ["@webgpu/types", "node"]
+  },
+  "include": ["src"]
+}

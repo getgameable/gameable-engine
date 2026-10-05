@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "baseUrl": "/",
+  "assets": [
+    {
+      "id": "env.arena",
+      "type": "splat",
+      "src": "@placeholder/arena.spz",
+      "tags": ["world"],
+      "collider": { "shape": "mesh", "src": "@placeholder/arena.collider.bin", "layer": "static" }
+    },
+    {
+      "id": "char.resident",
+      "type": "character",
+      "src": "@aosrig/aosrig_v0.glb",
+      "tags": ["character"],
+      "rig": { "backend": "skinned" }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // Node-only: the scaffolder copies files and spawns git and npm.
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,335 @@
+{
+  "name": "gameable",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Gameable Engine: a browser game engine where the world is a gaussian splat, the renderer is WebGPU and all game logic is a WebAssembly component.",
+  "keywords": [
+    "game-engine",
+    "gaussian-splatting",
+    "webgpu",
+    "webassembly",
+    "three",
+    "multiplayer"
+  ],
+  "homepage": "https://engine.gameable.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/getgameable/gameable-engine.git",
+    "directory": "packages/gameable"
+  },
+  "bugs": "https://github.com/getgameable/gameable-engine/issues",
+  "license": "MIT",
+  "bin": {
+    "gameable": "./bin/gameable.mjs"
+  },
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./sdk/prelude": {
+      "gameable-source": "./src/sdk-prelude.ts",
+      "types": "./dist/sdk-prelude.d.ts",
+      "import": "./dist/sdk-prelude.js"
+    },
+    "./sdk/keycodes": {
+      "gameable-source": "./src/sdk-keycodes.ts",
+      "types": "./dist/sdk-keycodes.d.ts",
+      "import": "./dist/sdk-keycodes.js"
+    },
+    "./sdk/wire": {
+      "gameable-source": "./src/sdk-wire.ts",
+      "types": "./dist/sdk-wire.d.ts",
+      "import": "./dist/sdk-wire.js"
+    },
+    "./sdk/wit/entry": {
+      "gameable-source": "./src/sdk-wit-entry.ts",
+      "types": "./dist/sdk-wit-entry.d.ts",
+      "import": "./dist/sdk-wit-entry.js"
+    },
+    "./core": {
+      "gameable-source": "./src/core.ts",
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./core/render": {
+      "gameable-source": "./src/core-render.ts",
+      "types": "./dist/core-render.d.ts",
+      "import": "./dist/core-render.js"
+    },
+    "./core/headless": {
+      "gameable-source": "./src/core-headless.ts",
+      "types": "./dist/core-headless.d.ts",
+      "import": "./dist/core-headless.js"
+    },
+    "./splat": {
+      "gameable-source": "./src/splat.ts",
+      "types": "./dist/splat.d.ts",
+      "import": "./dist/splat.js"
+    },
+    "./splat/bench": {
+      "gameable-source": "./src/splat-bench.ts",
+      "types": "./dist/splat-bench.d.ts",
+      "import": "./dist/splat-bench.js"
+    },
+    "./character": {
+      "gameable-source": "./src/character.ts",
+      "types": "./dist/character.d.ts",
+      "import": "./dist/character.js"
+    },
+    "./character/aosrig": {
+      "gameable-source": "./src/character-aosrig.ts",
+      "types": "./dist/character-aosrig.d.ts",
+      "import": "./dist/character-aosrig.js"
+    },
+    "./animation": {
+      "gameable-source": "./src/animation.ts",
+      "types": "./dist/animation.d.ts",
+      "import": "./dist/animation.js"
+    },
+    "./physics": {
+      "gameable-source": "./src/physics.ts",
+      "types": "./dist/physics.d.ts",
+      "import": "./dist/physics.js"
+    },
+    "./input": {
+      "gameable-source": "./src/input.ts",
+      "types": "./dist/input.d.ts",
+      "import": "./dist/input.js"
+    },
+    "./audio": {
+      "gameable-source": "./src/audio.ts",
+      "types": "./dist/audio.d.ts",
+      "import": "./dist/audio.js"
+    },
+    "./audio/testing": {
+      "gameable-source": "./src/audio-testing.ts",
+      "types": "./dist/audio-testing.d.ts",
+      "import": "./dist/audio-testing.js"
+    },
+    "./assets": {
+      "gameable-source": "./src/assets.ts",
+      "types": "./dist/assets.d.ts",
+      "import": "./dist/assets.js"
+    },
+    "./assets/node": {
+      "gameable-source": "./src/assets-node.ts",
+      "types": "./dist/assets-node.d.ts",
+      "import": "./dist/assets-node.js"
+    },
+    "./aam": {
+      "gameable-source": "./src/aam.ts",
+      "types": "./dist/aam.d.ts",
+      "import": "./dist/aam.js"
+    },
+    "./aosrig": {
+      "gameable-source": "./src/aosrig.ts",
+      "types": "./dist/aosrig.d.ts",
+      "import": "./dist/aosrig.js"
+    },
+    "./placeholder": {
+      "gameable-source": "./src/placeholder.ts",
+      "types": "./dist/placeholder.d.ts",
+      "import": "./dist/placeholder.js"
+    },
+    "./host": {
+      "gameable-source": "./src/host.ts",
+      "types": "./dist/host.d.ts",
+      "import": "./dist/host.js"
+    },
+    "./host/characters": {
+      "gameable-source": "./src/host-characters.ts",
+      "types": "./dist/host-characters.d.ts",
+      "import": "./dist/host-characters.js"
+    },
+    "./host/features": {
+      "gameable-source": "./src/host-features.ts",
+      "types": "./dist/host-features.d.ts",
+      "import": "./dist/host-features.js"
+    },
+    "./host/server": {
+      "gameable-source": "./src/host-server.ts",
+      "types": "./dist/host-server.d.ts",
+      "import": "./dist/host-server.js"
+    },
+    "./net": {
+      "gameable-source": "./src/net.ts",
+      "types": "./dist/net.d.ts",
+      "import": "./dist/net.js"
+    },
+    "./net/client": {
+      "gameable-source": "./src/net-client.ts",
+      "types": "./dist/net-client.d.ts",
+      "import": "./dist/net-client.js"
+    },
+    "./net/page": {
+      "gameable-source": "./src/net-page.ts",
+      "types": "./dist/net-page.d.ts",
+      "import": "./dist/net-page.js"
+    },
+    "./net/solo": {
+      "gameable-source": "./src/net-solo.ts",
+      "types": "./dist/net-solo.d.ts",
+      "import": "./dist/net-solo.js"
+    },
+    "./net/server": {
+      "gameable-source": "./src/net-server.ts",
+      "types": "./dist/net-server.d.ts",
+      "import": "./dist/net-server.js"
+    },
+    "./net/testing": {
+      "gameable-source": "./src/net-testing.ts",
+      "types": "./dist/net-testing.d.ts",
+      "import": "./dist/net-testing.js"
+    },
+    "./rooms": {
+      "gameable-source": "./src/rooms.ts",
+      "types": "./dist/rooms.d.ts",
+      "import": "./dist/rooms.js"
+    },
+    "./rooms/client": {
+      "gameable-source": "./src/rooms-client.ts",
+      "types": "./dist/rooms-client.d.ts",
+      "import": "./dist/rooms-client.js"
+    },
+    "./rooms/server": {
+      "gameable-source": "./src/rooms-server.ts",
+      "types": "./dist/rooms-server.d.ts",
+      "import": "./dist/rooms-server.js"
+    },
+    "./rooms/testing": {
+      "gameable-source": "./src/rooms-testing.ts",
+      "types": "./dist/rooms-testing.d.ts",
+      "import": "./dist/rooms-testing.js"
+    },
+    "./conversation": {
+      "gameable-source": "./src/conversation.ts",
+      "types": "./dist/conversation.d.ts",
+      "import": "./dist/conversation.js"
+    },
+    "./conversation/relay": {
+      "gameable-source": "./src/conversation-relay.ts",
+      "types": "./dist/conversation-relay.d.ts",
+      "import": "./dist/conversation-relay.js"
+    },
+    "./voice": {
+      "gameable-source": "./src/voice.ts",
+      "types": "./dist/voice.d.ts",
+      "import": "./dist/voice.js"
+    },
+    "./test": {
+      "gameable-source": "./src/test.ts",
+      "types": "./dist/test.d.ts",
+      "import": "./dist/test.js"
+    },
+    "./three": {
+      "gameable-source": "./src/three.ts",
+      "types": "./dist/three.d.ts",
+      "import": "./dist/three.js"
+    },
+    "./vite": {
+      "gameable-source": "./src/vite.ts",
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    },
+    "./cli": {
+      "gameable-source": "./src/cli.ts",
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.js"
+    },
+    "./assets/*": "./assets/*",
+    "./wit/*.wit": "./wit/*.wit",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "assets",
+    "bin",
+    "dist",
+    "wit",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "prepare": "node scripts/sync-files.mjs && tsdown -c tsdown.prepare.config.ts",
+    "gen": "node scripts/gen-entries.mjs",
+    "gen:check": "node scripts/gen-entries.mjs --check",
+    "build": "tsdown && node scripts/build-types.mjs && node scripts/sync-files.mjs --dist",
+    "prepack": "node scripts/gen-entries.mjs --check && tsdown && node scripts/build-types.mjs && node scripts/sync-files.mjs --pack && node scripts/publish-manifest.mjs",
+    "postpack": "node scripts/publish-manifest.mjs --restore"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@colyseus/sdk": "0.18.4",
+    "bitecs": "0.4.0",
+    "jolt-physics": "1.1.0",
+    "onnxruntime-web": "1.29.0"
+  },
+  "peerDependencies": {
+    "@bytecodealliance/jco": "1.33.0",
+    "@colyseus/core": "0.18.18",
+    "@colyseus/ws-transport": "0.18.4",
+    "binaryen": "130.0.0",
+    "componentize-qjs": "0.4.4",
+    "express": "5.2.1",
+    "pg": "8.23.1",
+    "three": ">=0.186.0 <0.187.0",
+    "vite": ">=6",
+    "ws": "8.18.3"
+  },
+  "peerDependenciesMeta": {
+    "@bytecodealliance/jco": {
+      "optional": true
+    },
+    "@colyseus/core": {
+      "optional": true
+    },
+    "@colyseus/ws-transport": {
+      "optional": true
+    },
+    "binaryen": {
+      "optional": true
+    },
+    "componentize-qjs": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "pg": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "ws": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@gameable/animation": "0.0.0",
+    "@gameable/assets": "0.0.0",
+    "@gameable/assets-aam": "0.0.0",
+    "@gameable/assets-aosrig": "0.0.0",
+    "@gameable/assets-placeholder": "0.0.0",
+    "@gameable/audio": "0.0.0",
+    "@gameable/character": "0.0.0",
+    "@gameable/cli": "0.0.0",
+    "@gameable/conversation": "0.0.0",
+    "@gameable/core": "0.0.0",
+    "@gameable/gameable-character": "0.0.0",
+    "@gameable/input": "0.0.0",
+    "@gameable/net": "0.0.0",
+    "@gameable/physics-jolt": "0.0.0",
+    "@gameable/rooms": "0.0.0",
+    "@gameable/sdk": "0.0.0",
+    "@gameable/splat": "0.0.0",
+    "@gameable/test-harness": "0.0.0",
+    "@gameable/vite-plugin-gameable": "0.0.0",
+    "@gameable/voice": "0.0.0",
+    "@gameable/wasm-host": "0.0.0"
+  }
+}

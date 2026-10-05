@@ -1,0 +1,64 @@
+{
+  "name": "@gameable/net",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "description": "Multiplayer for Gameable Engine: the wire protocol, transports and rooms.",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "sql"
+  ],
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "gameable-source": "./src/client/index.ts",
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    },
+    "./page": {
+      "gameable-source": "./src/page/index.ts",
+      "types": "./dist/page/index.d.ts",
+      "import": "./dist/page/index.js"
+    },
+    "./server": {
+      "gameable-source": "./src/server/index.ts",
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    },
+    "./solo": {
+      "gameable-source": "./src/solo/index.ts",
+      "types": "./dist/solo/index.d.ts",
+      "import": "./dist/solo/index.js"
+    },
+    "./testing": {
+      "gameable-source": "./src/testing/index.ts",
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@gameable/assets": "0.0.0",
+    "@gameable/assets-placeholder": "0.0.0",
+    "@gameable/core": "0.0.0",
+    "@gameable/physics-jolt": "0.0.0",
+    "@gameable/sdk": "0.0.0",
+    "@gameable/wasm-host": "0.0.0",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@types/pg": "8.23.1",
+    "@types/ws": "8.18.1",
+    "embedded-postgres": "17.10.0-beta.17",
+    "jsdom": "29.1.1"
+  },
+  "private": true
+}

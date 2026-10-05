@@ -1,0 +1,25 @@
+{
+  "id": "hit-marker-on-crosshair",
+  "title": "Show a hit marker when a shot connects",
+  "template": "fps",
+  "prompt": "Show feedback when a shot actually hits an enemy: put a short-lived hit marker on the HUD that appears for about a fifth of a second after a connecting shot and then disappears. Do not change what happens when a shot misses.",
+  "expectedFiles": ["src/systems/weapon.ts", "src/hud.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "(hitMarker|hit_marker|hit marker|marker)",
+      "minCount": 2,
+      "note": "a hit marker exists"
+    },
+    {
+      "file": "*",
+      "pattern": "hud\\.set",
+      "note": "it reaches the HUD"
+    },
+    {
+      "file": "*",
+      "pattern": "0\\.2|200",
+      "note": "a ~0.2s lifetime"
+    }
+  ]
+}

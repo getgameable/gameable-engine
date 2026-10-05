@@ -1,0 +1,30 @@
+{
+  "id": "win-on-60-second-timer",
+  "title": "Win condition becomes a 60 second timer",
+  "template": "fps",
+  "prompt": "Change the win condition. Instead of winning by clearing the arena, the player must survive for 60 seconds. Show the remaining time on the HUD, count it down with the fixed timestep, and show the win message when it reaches zero. Dying still loses. Put the duration in the game rules.",
+  "expectedFiles": ["src/game.ts", "src/hud.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "\\b60\\b",
+      "note": "sixty seconds"
+    },
+    {
+      "file": "*",
+      "pattern": "(timer|remaining|survive|countdown)",
+      "minCount": 2,
+      "note": "a timer exists"
+    },
+    {
+      "file": "*",
+      "pattern": "ctx\\.dt|\\bdt\\b",
+      "note": "counted down with the frame delta"
+    },
+    {
+      "file": "*",
+      "pattern": "hud\\.set",
+      "note": "the remaining time reaches the HUD"
+    }
+  ]
+}

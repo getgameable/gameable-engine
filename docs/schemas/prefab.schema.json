@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gameable.avataros.dev/schemas/prefab.schema.json",
+  "title": "Gameable Engine prefab",
+  "description": "Minimal declarative entity template. A prefab is component data only; behaviour lives in systems.",
+  "type": "object",
+  "required": ["id"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "Prefab name referenced by spawns and by spawn().",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "extends": {
+      "description": "Another prefab id to inherit from; fields here win.",
+      "type": "string"
+    },
+    "asset": {
+      "description": "Manifest asset id used for the visual. Never a path.",
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": { "$ref": "#/$defs/vec3" },
+        "rotation": { "$ref": "#/$defs/quat" },
+        "scale": { "$ref": "#/$defs/vec3" }
+      }
+    },
+    "body": {
+      "description": "Rigid body or character controller, if this prefab has one.",
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "enum": ["static", "dynamic", "kinematic", "character"] },
+        "shape": { "type": "string", "enum": ["box", "sphere", "capsule", "mesh", "convex-hull"] },
+        "mass": { "type": "number", "minimum": 0 },
+        "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "halfExtents": { "$ref": "#/$defs/vec3" }
+      }
+    },
+    "health": { "type": "number", "minimum": 0 },
+    "speed": { "type": "number", "minimum": 0 },
+    "components": {
+      "description": "Extra game-defined component values, keyed by component name.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": ["number", "boolean", "string"] }
+      }
+    }
+  },
+  "$defs": {
+    "vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+    "quat": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 }
+  },
+  "examples": [
+    {
+      "id": "enemy",
+      "asset": "capsule",
+      "tags": ["enemy"],
+      "body": { "kind": "character", "shape": "capsule", "radius": 0.35, "height": 1.8 },
+      "health": 50,
+      "speed": 3.5
+    }
+  ]
+}

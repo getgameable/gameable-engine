@@ -1,0 +1,30 @@
+{
+  "id": "ammo-pickup",
+  "title": "Add an ammo pickup",
+  "template": "fps",
+  "prompt": "Add an ammo box pickup, alongside the existing medkit. Walking into one refills the magazine. Give it its own prefab, a different colour from the medkit, and spawn two of them in the arena. Put the amount it gives in the game rules.",
+  "expectedFiles": ["src/prefabs.ts", "src/systems/pickups.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "ammo",
+      "minCount": 3,
+      "note": "the change is about ammo"
+    },
+    {
+      "file": "*",
+      "pattern": "prefab\\(",
+      "note": "a new prefab is declared"
+    },
+    {
+      "file": "*",
+      "pattern": "Pickup",
+      "note": "reuses the Pickup component"
+    },
+    {
+      "file": "*",
+      "pattern": "sensor",
+      "note": "a walk-into trigger, not a solid body"
+    }
+  ]
+}

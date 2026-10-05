@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    // Node runs these files directly with its built-in type stripping, so the
+    // module graph has to be one node can resolve on its own: real `.ts`
+    // specifiers, node resolution, no build step and no path mapping.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+
+    // Not a project reference: the root `tsc -b` graph is the engine, and this
+    // directory is tooling that is never published or imported from it.
+    "composite": false,
+    "noEmit": true,
+
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "*.config.ts"],
+  "exclude": ["node_modules", "results"]
+}

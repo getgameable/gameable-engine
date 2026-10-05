@@ -1,0 +1,73 @@
+{
+  "$comment": "Task-scoped documentation bundles for small language models. Keep each bundle to the minimum a model needs to write a working game of that shape; the budget is enforced by tools/docs/lint.mjs.",
+  "bundles": {
+    "llms-fps.txt": {
+      "title": "Gameable Engine — building a first-person shooter",
+      "summary": "Everything needed to write an FPS with Gameable Engine, and nothing else.",
+      "files": [
+        "AGENTS.md",
+        "docs/start/02-first-fps.md",
+        "docs/concepts/wasm-boundary.md",
+        "docs/concepts/ecs.md",
+        "packages/sdk/README.md",
+        "templates/fps/src/game.ts",
+        "templates/fps/src/prefabs.ts",
+        "docs/recipes/add-a-weapon.md",
+        "docs/recipes/add-an-enemy.md",
+        "docs/recipes/change-the-level.md",
+        "docs/recipes/add-a-hud-element.md"
+      ]
+    },
+    "llms-third-person.txt": {
+      "title": "Gameable Engine — building a third-person adventure",
+      "summary": "Everything needed to write a third-person adventure with Gameable Engine, and nothing else.",
+      "files": [
+        "AGENTS.md",
+        "docs/start/03-first-adventure.md",
+        "docs/concepts/ecs.md",
+        "packages/sdk/README.md",
+        "templates/third-person/src/game.ts",
+        "templates/third-person/src/prefabs.ts",
+        "docs/recipes/add-an-interactable.md",
+        "docs/recipes/add-npc-dialogue.md",
+        "docs/recipes/tune-the-follow-camera.md",
+        "docs/recipes/add-a-locomotion-state.md",
+        "docs/recipes/use-the-sample-character.md"
+      ]
+    },
+    "llms-three-character.txt": {
+      "title": "A Gameable character in your three.js app",
+      "summary": "Everything needed to put a Gameable studio character into an ordinary three.js app. Nothing about the engine.",
+      "standalone": true,
+      "files": ["docs/three/gameable-character.md"]
+    },
+    "llms-visit.txt": {
+      "title": "Gameable Engine — a character's page (the visit template)",
+      "summary": "Everything needed to give a published character's page new jobs, and nothing else.",
+      "files": [
+        "AGENTS.md",
+        "templates/visit/AGENTS.md",
+        "templates/visit/README.md",
+        "templates/visit/src/game.ts",
+        "templates/visit/src/visit.ts",
+        "packages/sdk/README.md"
+      ],
+      "preamble": [
+        "# How to use these files",
+        "",
+        "A generated bundle of the Gameable Engine docs for `templates/visit`: the page the Gameable",
+        "studio publishes for a character. Each file starts with `# FILE: <path>`.",
+        "",
+        "1. Read AGENTS.md, then templates/visit/AGENTS.md. The numbered rules are enforced by",
+        "   ESLint and `npm run check`, not advice.",
+        "2. Work in this repository's `templates/visit` (it needs the checkout: `npm create",
+        "   gameable` does not offer it). `npm run dev -w templates/visit` serves it on",
+        "   http://localhost:5188.",
+        "3. What the page is given is `src/visit.ts` (query parameters or the `?visit=` lookup); what",
+        "   the character does is `src/game.ts`, compiled to the wasm guest. **Never edit",
+        "   `packages/*`**: if the page needs an engine change, say so and stop.",
+        ""
+      ]
+    }
+  }
+}

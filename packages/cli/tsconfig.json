@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // The CLI is node-only: it spawns child processes and needs no WebGPU. DOM
+    // stays in `lib` only because that is where `WebAssembly` is declared.
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

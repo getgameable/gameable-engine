@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint, typecheck, test, docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false # fixtures are deliberately not LFS-tracked
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: npm run check
+        run: npm run check
+
+      - name: npm run build
+        run: npm run build
+
+  # Real-GPU end-to-end tests. Disabled until a self-hosted Windows runner with
+  # a GPU is registered; flip `if:` to `github.event_name != 'pull_request'`
+  # (or remove it) at that point. Kept here so the job definition is reviewed
+  # alongside the code it will run.
+  e2e-gpu:
+    name: e2e (real GPU)
+    if: false
+    needs: check
+    runs-on: [self-hosted, windows, gpu]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Playwright e2e on a real GPU
+        run: npm run test:e2e

@@ -1,0 +1,25 @@
+{
+  "name": "@gameable/test-harness",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Mock host, record/replay, determinism and parity helpers for guest modules.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@gameable/sdk": "0.0.0"
+  }
+}

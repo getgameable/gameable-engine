@@ -1,0 +1,25 @@
+{
+  "id": "enemy-drops-medkit",
+  "title": "Enemies drop a medkit on death",
+  "template": "fps",
+  "prompt": "When an enemy dies it should drop a medkit where it fell, which the player can then walk into. Only one drop per enemy.",
+  "expectedFiles": ["src/systems/enemyAI.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "MedkitPrefab|medkit",
+      "minCount": 1,
+      "note": "a medkit is involved"
+    },
+    {
+      "file": "*",
+      "pattern": "spawn\\(",
+      "note": "something is spawned"
+    },
+    {
+      "file": "*",
+      "pattern": "Transform\\.(pos|position)|Transform\\.",
+      "note": "spawned at the corpse position"
+    }
+  ]
+}

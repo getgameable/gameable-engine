@@ -1,0 +1,5 @@
+# Baked by `scripts/gen-gnm-pack.mjs`, which `predev` and `prebuild` run automatically.
+# Not committed: the source head is licensed data, the full pack is 42 MB, and
+# `.gitattributes` would route `*.aosrig` through Git LFS — a clone without LFS would get
+# a pointer file and a confusing "not an .aosrig pack" error instead of a head.
+public/generated/

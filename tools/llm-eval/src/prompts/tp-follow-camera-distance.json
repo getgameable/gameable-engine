@@ -1,0 +1,21 @@
+{
+  "id": "tp-follow-camera-distance",
+  "title": "Third person: pull the follow camera back",
+  "template": "third-person",
+  "skipUntilTemplate": true,
+  "prompt": "Pull the follow camera further back: increase the spring arm length by half, and keep its collision against the world working so it still pulls in when there is a wall behind the player. Put the distance in the game rules.",
+  "expectedFiles": ["src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "camera\\.follow|follow",
+      "minCount": 1,
+      "note": "the follow camera is configured"
+    },
+    {
+      "file": "*",
+      "pattern": "distance|armLength|arm",
+      "note": "a distance is set"
+    }
+  ]
+}

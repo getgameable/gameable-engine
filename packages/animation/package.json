@@ -1,0 +1,27 @@
+{
+  "name": "@gameable/animation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Layered animator: body mixer and state machine, additive gestures, ARKit face, procedurals.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "assets",
+    "tools"
+  ],
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "scripts": {
+    "build": "tsdown"
+  }
+}

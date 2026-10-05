@@ -1,0 +1,18 @@
+{
+  "name": "@gameable/fixture-tiny-game",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Smallest complete game module: the fixture the wasm boundary tests build and run.",
+  "license": "MIT",
+  "scripts": {
+    "build:guest": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "gameable": "0.0.0"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "1.33.0",
+    "componentize-qjs": "0.4.4"
+  }
+}

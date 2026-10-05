@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "env.arena",
+      "type": "splat",
+      "src": "arena.spz",
+      "tags": ["world", "placeholder"],
+      "collider": { "shape": "mesh", "src": "arena.collider.bin", "layer": "static" }
+    },
+    { "id": "sfx.shot", "type": "audio", "src": "shot.wav", "tags": ["sfx", "placeholder"] },
+    { "id": "sfx.hit", "type": "audio", "src": "hit.wav", "tags": ["sfx", "placeholder"] },
+    { "id": "sfx.pickup", "type": "audio", "src": "pickup.wav", "tags": ["sfx", "placeholder"] },
+    { "id": "sfx.step", "type": "audio", "src": "step.wav", "tags": ["sfx", "placeholder"] }
+  ]
+}

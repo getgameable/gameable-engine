@@ -1,0 +1,21 @@
+{
+  "name": "@gameable/example-splat-viewer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Splat viewer: static SPZ/PLY, the dynamic AnimatedSplat path, the WebGL fallback and the S1/S2 benchmarks.",
+  "scripts": {
+    "gen:models": "node scripts/gen_spz.mjs 150000 public/models/synthetic_150k.spz",
+    "predev": "node scripts/gen_spz.mjs 150000 public/models/synthetic_150k.spz",
+    "dev": "vite",
+    "prebuild": "node scripts/gen_spz.mjs 150000 public/models/synthetic_150k.spz",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gameable": "*"
+  },
+  "devDependencies": {
+    "vite": "8.3.0"
+  }
+}

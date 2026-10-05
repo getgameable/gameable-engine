@@ -1,0 +1,517 @@
+# A Gameable character in your three.js app
+
+This page is complete on its own: it is everything needed to put a character made in the
+Gameable studio into an ordinary three.js app. You keep your own renderer, scene, camera,
+lights and render loop. There is no engine to create, no ECS and no WebAssembly.
+
+The character draws as gaussian splats (about 300,000 of them), posed on the GPU every frame
+by its skeleton and its face rig. You get an `Object3D` to add to your scene, body clips by
+name, and a face you drive with Apple ARKit's 52 blendshapes.
+
+## Requirements
+
+- **WebGPU first.** three's `WebGPURenderer` runs on WebGPU where the browser has it (current
+  Chrome and Edge, Safari 26 and later) and falls back to WebGL2 where it does not; the character
+  draws on both, slower on WebGL2. See [Without WebGPU](#without-webgpu).
+- **three 0.186** (any 0.186 patch: the packages accept `>=0.186.0 <0.187.0`), imported from
+  `three/webgpu` (renderer, scene, materials) and
+  `three/addons/...` (controls, loaders). The classic `WebGLRenderer` is not supported.
+- **The character's URL**: the address of its `character.json`, for example
+  `https://<studio>/companion/public/<org>/<slug>/character.json` (its stable address; see
+  [What it downloads](#what-it-downloads-and-which-copy-to-use)). The studio's
+  "Use in your app" panel shows it. The host must send CORS headers; the studio does.
+
+## Install
+
+```sh
+npm install three@0.186 gameable
+npm install -D vite typescript @types/three@0.186 @webgpu/types
+```
+
+`three@0.186` installs the latest 0.186 patch and records `^0.186.x`, which stays within 0.186.
+
+If you were given the package as a `.tgz` file instead of from npm, copy it into your project
+first (for example `vendor/`) and install it from there, so `package.json` records a path that
+works for everyone who clones it. It is the only package: the engine code it uses is bundled
+inside, and three is your own.
+
+```sh
+npm install three@0.186 ./vendor/gameable-0.0.0.tgz
+```
+
+No Vite configuration is needed. In `tsconfig.json`, add `"@webgpu/types"` to
+`compilerOptions.types` and use `"moduleResolution": "bundler"`.
+
+A minimal app's `vite build` is about 1.2 MB of JavaScript minified (0.35 MB gzipped), three
+included, and no WebAssembly: the packages bring no `.wasm` into `dist/`. The only warning to
+expect is Vite's note that a chunk is over 500 kB: three and the character runtime alone are about
+0.9 MB, and your own code adds to that chunk. Set `build.chunkSizeWarningLimit` (in kB) above your
+largest chunk, for example `1500`.
+
+## The whole app
+
+`index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>My scene</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #20232a;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+`src/main.ts`:
+
+```ts
+import {
+  Color,
+  DirectionalLight,
+  HemisphereLight,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Scene,
+  Timer,
+  WebGPURenderer,
+} from 'three/webgpu';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { loadGameableCharacter } from 'gameable/three';
+
+const CHARACTER_URL = 'https://<studio>/companion/public/<org>/<slug>/character.json'; // its stable address
+
+// Your renderer, scene, camera, floor and lights: nothing here is specific to the character.
+const renderer = new WebGPURenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+await renderer.init(); // before loading the character
+
+const scene = new Scene();
+scene.background = new Color(0x20232a);
+const camera = new PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0, 1.4, 4.2);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.95, 0);
+
+const floor = new Mesh(
+  new PlaneGeometry(12, 12),
+  new MeshStandardMaterial({ color: 0x5b6470, roughness: 0.9 }),
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+scene.add(new HemisphereLight(0xffffff, 0x404040, 1.2));
+const sun = new DirectionalLight(0xffffff, 2);
+sun.position.set(3, 5, 2);
+scene.add(sun);
+
+// The character.
+const character = await loadGameableCharacter(renderer, CHARACTER_URL);
+scene.add(character.object3D); // feet at the origin, facing +Z
+character.play('idle');
+character.lookAt(camera); // eyes and head follow the visitor
+
+const timer = new Timer();
+void renderer.setAnimationLoop((time) => {
+  timer.update(time);
+  controls.update();
+  character.update(timer.getDelta(), camera); // every frame, before drawing
+  renderer.render(scene, camera);
+});
+
+// Later, from a button or a timer:
+// character.play('wave');
+```
+
+`npm run dev` (with `"dev": "vite"` in `package.json`) and open the page. The character
+appears once its files have downloaded (a typical character: about 29 MB the first time, cached
+after that): it stands on the floor and idles.
+
+## At a glance
+
+`loadGameableCharacter(renderer, url, options?)` resolves to the character. Its options:
+
+| Option                  | Default        | What it does                                                                            |
+| ----------------------- | -------------- | --------------------------------------------------------------------------------------- |
+| `clip`                  | `idle`         | The first clip. A name the character does not have fails the load (`load-failed`).      |
+| `tint`                  | white          | Multiplies its colour, to fit your light ([below](#fitting-it-into-your-scenes-light)). |
+| `exposure`              | `1`            | Multiplies its brightness.                                                              |
+| `castShadow`            | `false`        | Casts a shadow into your scene's shadow maps.                                           |
+| `mouth`                 | `false`        | Draws the inside of the mouth (teeth, gums, tongue) when the lips part.                 |
+| `onProgress`            |                | `(loadedBytes, totalBytes)` as the files arrive.                                        |
+| `fetch`                 | the global one | Fetches every file with this (cookies, a proxy).                                        |
+| `signal`                |                | An `AbortSignal` that cancels the download.                                             |
+| `allowWebGL`            | `true`         | Draws on the WebGL2 fallback; `false` refuses it ([Without WebGPU](#without-webgpu)).   |
+| `allowSoftwareRenderer` | `false`        | Draws even with no GPU (software); off, the load throws `software-renderer`.            |
+| `attachPass`            | `true`         | Attaches the pass with scene hooks; `false`: you drive it ([Placing it](#placing-it)).  |
+
+The character:
+
+| Member                                           | What it does                                                                  |
+| ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `object3D`                                       | Add it to your scene; move, turn and parent it.                               |
+| `update(dt, camera)`                             | Every frame, before `renderer.render`.                                        |
+| `clips`, `clip`, `play(name, { fade, loop })`    | The clips it has, the one playing, and playing one ([below](#playing-clips)). |
+| `lookAt(target, { head, eyes })`                 | Eyes, head and a little of the body follow a target; `null` stops.            |
+| `setExpression('arkit52', weights)`              | The face, in ARKit's 52 blendshapes.                                          |
+| `setTint(color)`, `setExposure(n)`, `castShadow` | Change the light fit and the shadow at any time.                              |
+| `dispose()`                                      | Removes it and frees its GPU memory.                                          |
+
+## Moving an app from `WebGLRenderer`
+
+- Import from `three/webgpu` instead of `three` (renderer, scene, cameras, lights, materials);
+  addons stay `three/addons/...`. Create a `WebGPURenderer` and `await renderer.init()` before
+  the first render and before loading the character.
+- three's built-in materials (`MeshStandardMaterial`, `MeshBasicMaterial`,
+  `MeshPhysicalMaterial`, …), textures (`CanvasTexture` too), lights and shadow maps keep working
+  as they are: only the imports change.
+- `ShaderMaterial`, `RawShaderMaterial` and `onBeforeCompile` do not run on `WebGPURenderer`:
+  rewrite them as node materials (TSL). `EffectComposer` post-processing does not either; three's
+  `RenderPipeline` replaces it.
+- `PCFSoftShadowMap` does not exist there (it warns and uses `PCFShadowMap`): set
+  `renderer.shadowMap.type = PCFShadowMap`, or `VSMShadowMap` for softer edges.
+
+## Placing it
+
+`character.object3D` is an ordinary `Object3D`. Its origin is between the feet, one unit is
+one metre, and it faces +Z. Move it with `object3D.position`, turn it with
+`object3D.rotation.y`, parent it to anything: a group, a vehicle, a shop's shelf. On each `update`
+the character finds its scene through its parents (moved into another scene, it follows), so it
+draws as long as the object you render is that `Scene`.
+
+Objects in front of the character hide it, and it looks as it does in the studio. A character's
+splats were trained blending their sRGB colours, while three blends everything in linear light,
+which would make it paler and flatter. So on the first `update` the character hooks a pass into
+your scene (`scene.onBeforeRender`): before each `renderer.render(scene, camera)` it draws the
+depth of your scene's opaque objects, then the characters against it, blended on sRGB colours;
+during your render, one transparent object laid over the frame brings them in. Nothing changes in
+your loop, and it works the same through three's post-processing (`RenderPipeline`).
+
+- Your scene's opaque objects are drawn once more per frame, depth only, in one extra render:
+  each with its own material's side, so a wall seen from behind hides nothing.
+- The pass uses the camera layers 30 and 31 for its own renders: leave them free.
+- Like any splat, the characters are drawn after your transparent objects (render order 1000): a
+  pane of glass in front of a character is drawn under it.
+- A cut-out (`map` or `alphaMap` with `alphaTest`: foliage, a fence) hides the character only
+  where its texture is solid, as it does in your render.
+- If you assign `scene.onBeforeRender` or `scene.onAfterRender` yourself, do it before the first
+  `update` (the pass keeps and calls yours), or wrap the one already there. Or attach the pass
+  yourself, without hooks: load with `{ attachPass: false }`, then
+  `const pass = attachManualPass(renderer, scene)` (from this package) and call
+  `pass.begin(camera)` just before `renderer.render(scene, camera)` and `pass.end()` just after.
+- A reflection or other render of the scene made during your render shows no character.
+- One renderer, one camera: the character is sorted and coloured on the GPU of the renderer you
+  loaded it with, for the camera you pass to `update`. A second renderer, or a second camera in
+  the same frame (a split screen), draws it out of order.
+
+To find the head (to aim a close-up camera at the face, or attach a hat), use the skeleton's
+`Head` bone. It follows every clip and wherever you move `object3D`; read it after
+`character.update`:
+
+```ts
+const head = character.object3D.getObjectByName('Head')!; // a studio character's head bone
+const headPosition = head.getWorldPosition(new Vector3());
+camera.lookAt(headPosition.x, headPosition.y + 0.13, headPosition.z); // the eyes: about 13 cm up
+```
+
+The bone sits where the head meets the neck (about 1.48 m up on a 1.72 m character standing);
+the eyes are about 13 cm above it and the mouth about 5 cm. Anything added to the bone
+(`head.add(hat)`) moves with the head.
+
+## Playing clips
+
+`character.clips` lists every clip the character can play. Studio characters have
+`idle`, `walk`, `run` and `wave`, plus the studio's shared pack (names starting with `ual_`,
+such as `ual_dance`, `ual_jump`, `ual_sitting_idle`).
+
+```ts
+character.play('wave'); // cross-fades from the current clip over 0.25 s
+character.play('walk', { fade: 0.5 }); // a longer cross-fade
+character.play('ual_dance', { loop: true }); // force looping
+console.log(character.clip); // the clip playing now
+```
+
+- It starts in `idle`: a gentle standing loop of about 2.5 s (the weight shifts, the arms and the
+  head sway a few degrees), with its blinks and `lookAt` on top. For anything more, play another
+  clip. Pass `{ clip: 'wave' }` as the third argument of `loadGameableCharacter` to start with
+  another.
+- A clip the studio marks as one-shot (`wave`) plays once and cross-fades back to the looping
+  clip that was playing before it. Pass `{ loop: true }` or `{ loop: false }` to override.
+- `play` with the clip that is already playing does nothing: a `wave` that is still waving runs
+  on to its end (and returns as before), so an app can call `play('wave')` on every greeting
+  without checking `character.clip` first.
+- `play` with a name the character does not have throws, and the message lists the names it
+  does have.
+- Clips play in place: `walk` and `run` do not move `object3D`. Move it yourself.
+
+## Looking at something
+
+```ts
+character.lookAt(camera); // follows the camera as it moves
+character.lookAt(shelf); // any Object3D, read every frame
+character.lookAt(new Vector3(2, 1.5, 0)); // a point in the world (change it and it follows)
+character.lookAt(camera, { head: 0.3, eyes: 1 }); // mostly with the eyes
+character.lookAt(null); // back to the clip's own head
+```
+
+The eyes lead, the head follows and the upper body turns a little, over whatever clip plays, as
+the studio's "Looks at you" does by default: the face turns 55 % of the way (a tenth of the look
+is the upper body's), the eyes take the rest. The head turns at most 45 degrees to the side (it
+gets there only for a target well off to the side) and 25 degrees up or down, the eyes 35 degrees
+more, so a target behind the character is looked at over the shoulder, as far as that goes.
+
+## Fitting it into your scene's light
+
+```ts
+const character = await loadGameableCharacter(renderer, url, {
+  tint: '#ffe6cc', // multiply its colour: warmer for a warm room (white: as captured)
+  exposure: 1.1, // and its brightness
+  castShadow: true, // a real shadow in your scene's shadow maps
+});
+character.setTint('#ffffff'); // change either at any time
+character.setExposure(1);
+character.castShadow = false;
+```
+
+The character is lit as it was captured: your scene's lights do not light it. `tint` and
+`exposure` multiply its colour in linear light, to match it to a warm or dim scene. A starting
+point for `tint`: your main light's colour taken about half way to white (a lantern's `#ffb060`
+gives `#ffd8b0`); then `exposure` above 1 for a room brighter than the capture, below 1 for a
+dim one. With several lights, take the colour of the one that lights the character most: usually
+the key light, the one that casts the shadows. Judge it beside a mesh lit by the same light. Both apply before your tone mapping, like
+every other colour in the scene.
+
+`scene.fog` does not apply to the character: in a foggy scene it keeps its full colour at any
+distance, so it reads brighter than the fogged scene around it far away. Keep it within the fog's
+near distance where you can; `tint` and `exposure` can dim it toward a darker fog as it walks away
+(they multiply, so they cannot lighten it toward a pale one).
+
+Characters are authored in the Gameable studio without tone mapping, so with three's default
+(`NoToneMapping`) it shows the studio's colours. Your renderer's tone mapping applies to it as to
+everything else on screen: choose the one that suits your scene.
+
+`castShadow` draws the character's body mesh (`body.glb` in the package, skinned to the same
+skeleton and following every clip) into your scene's shadow maps, never to the screen. It needs
+`renderer.shadowMap.enabled = true` and a light with `castShadow`, and costs one skinned draw
+per shadow-casting light each frame (six for a point light), so it is off by default. The mesh
+is made the first time you turn it on; the file itself always comes with the package. The
+character does not receive shadows.
+
+## The face
+
+```ts
+// ARKit's 52 blendshape names, any subset; the rest are 0.
+character.setExpression('arkit52', { mouthSmileLeft: 0.8, mouthSmileRight: 0.8 });
+character.setExpression('arkit52', { jawOpen: 0.5, browInnerUp: 0.6 });
+// Or all 52 as numbers in ARKit order.
+character.setExpression('arkit52', new Float32Array(52));
+```
+
+Weights are in `[0, 1]`: a weight outside it is clamped (`jawOpen: 2` is `jawOpen: 1`, a negative
+or `NaN` is 0). They hold until the next call; call it every frame to animate the face
+(for example from lip-sync). The character blinks on its own on top, every few seconds. A name
+that is not one of ARKit's 52 (`eyeBlinkLeft`, `jawOpen`, `mouthSmileRight`, … as Apple spells
+them, in any letter case) throws. From MediaPipe's face landmarker, pass its categories by name
+and leave out its first one, `_neutral`, which is not an ARKit blendshape.
+
+The face plays the weights through a hand-made mapping from ARKit's blendshapes to the face
+model, which moves it gently. On a studio character, measured as the most any point of the face
+moves: a full blink moves the lids about 4 mm (they do not close), `jawOpen: 1` about 11 mm, a
+smile about 20 mm. That is how it is, not a fault. A package that carries its own face table
+(`face.arkit` in `character.json`, the file `arkit_to_gnm.bin`) plays that instead, and moves the
+face as the studio's does (a blink about 9 mm, closing the eyes; `jawOpen: 1` about 35 mm); most
+packages do not carry one. The `eyeLook*` names also turn the eyeballs.
+
+## Keep your scene running while it loads
+
+The examples above `await` the load before the loop starts, which leaves the page blank while
+the files download. To show your scene (and a placeholder) straight away, start the loop first
+and add the character when it arrives (`placeholder` and `bar` are your own):
+
+```ts
+import { loadGameableCharacter, type GameableCharacter } from 'gameable/three';
+
+await renderer.init(); // still first: the loop and the load both need it
+let character: GameableCharacter | null = null;
+renderer.setAnimationLoop((time) => {
+  timer.update(time);
+  const dt = timer.getDelta();
+  character?.update(dt, camera);
+  renderer.render(scene, camera);
+});
+
+loadGameableCharacter(renderer, CHARACTER_URL, {
+  onProgress: (loaded, total) => (bar.value = total > 0 ? loaded / total : 0),
+})
+  .then((loaded) => {
+    scene.remove(placeholder);
+    scene.add(loaded.object3D);
+    loaded.play('wave');
+    character = loaded;
+  })
+  .catch((error: unknown) => {
+    // keep the placeholder; see "Without WebGPU" for the error codes
+    console.warn(error);
+  });
+```
+
+## Loading options
+
+```ts
+const character = await loadGameableCharacter(renderer, url, {
+  clip: 'idle', // the first clip
+  signal: controller.signal, // an AbortController's signal, to cancel the download
+  // Progress, in bytes: for a loading bar.
+  onProgress: (loaded, total) => (bar.value = total > 0 ? loaded / total : 0),
+  // Fetch every file with this instead of the global fetch, e.g. to send cookies:
+  fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
+});
+```
+
+`onProgress` counts the files as they are, not as they travel: a server that compresses them
+(the studio does for its packed copies) sends fewer bytes than `total`, so the bar still ends
+at 100 % but the download is shorter than it says. The last call has `loaded === total`; the
+character is then built on the GPU (well under a second on a desktop) before the promise
+resolves.
+
+Every file the `character.json` names is fetched relative to it and checked against the
+SHA-256 it lists; a file that does not match is refused and the load fails. That check is what
+makes loading a character from another site safe. The URL may redirect (a stable address that
+always answers with the character's current version): the files are then fetched beside the
+`character.json` the redirect ended at. A `fetch` you pass must follow redirects and return a
+`Response` whose `url` says where it ended, as the browser's `fetch` does.
+
+## What it downloads, and which copy to use
+
+A character loads in stages: `character.json`; then its files, each checked against its SHA-256
+(this is what `onProgress` counts); then the packed files are unpacked and everything is put on
+the GPU (a moment on a desktop); then `loadGameableCharacter` resolves and the next
+`update` draws it.
+
+The files, for a version 2 character:
+
+| File                                         | What it is                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------------------ |
+| `character.ply` (or packed: `character.psp`) | the gaussians: the character itself                                            |
+| `bindings.bin` (or packed: `bindings.pbn`)   | which bones and which face triangle each gaussian follows                      |
+| `head.aosrig`                                | the face model: the head and how each expression moves it (42 MB)              |
+| `skeleton.json`, `clips.json`                | the skeleton and the character's own clips                                     |
+| `body.glb`                                   | the body mesh (2 MB): never drawn; `castShadow` draws it into your shadow maps |
+| `arkit_to_gnm.bin`                           | the face's own ARKit table, when the package carries it (most do not)          |
+| `mouth_hidden.bin`                           | the face's gaussians inside the closed mouth, which give way as the lips open  |
+| `../soma_ready_clips.json`                   | the shared clip pack (17 MB, 2 MB compressed), fetched once per page           |
+
+`character.clips` is the character's own clips (the names `character.json`'s `clips` lists) plus
+the shared pack's (about 125 more, `ual_*`), so it is longer than `character.json` suggests.
+
+The studio publishes each character in two copies, both with `character.ply` and `bindings.bin`
+packed (`.psp`, `.pbn`, nothing visible lost) and every file served compressed:
+
+- the **full copy** (a typical character: 88 MB of files, about 29 MB downloaded);
+- the **light copy**, for phones (the 512 level: fewer gaussians; the same character: 73 MB of files, about
+  19 MB downloaded).
+
+The sizes `character.json` lists (and `onProgress` counts) are the files' own; the download is
+smaller because the studio compresses them on the way.
+
+Load a character from its **stable address**,
+`https://<studio>/companion/public/<org>/<slug>/character.json`: it always answers with the
+character's current version (a redirect the loader follows), and `?quality=` picks the copy:
+`full`, `light` (the phones' copy; the full one for a character without it) or `auto`, the
+default, which sends phones the light copy and everything else the full one. The versioned
+URLs under `files/` stay valid, but a re-published character gets a new one.
+
+**On phones:** a full copy needs a few hundred megabytes of memory (the files, then the GPU
+buffers: roughly 170 MB of GPU memory for a 300,000-gaussian character with its face); the
+phones' copy needs a fraction of that. WebGPU needs a secure context: a page opened on a phone
+over `http://<your LAN IP>` has no WebGPU (it falls back to WebGL2, slower); serve it over HTTPS,
+or forward the port to the phone so it opens `localhost`.
+
+## Without WebGPU
+
+On a browser without WebGPU, three's renderer falls back to WebGL2 and the character draws there
+too: the same code runs as transform feedback, slower, and the gaussians' draw order is sorted on
+the CPU and lags the camera by a frame or a few (visible only when the camera turns fast). To show
+something else there instead, pass `allowWebGL: false`: the load then throws `webgpu-required`.
+
+```ts
+import { GameableCharacterError, loadGameableCharacter } from 'gameable/three';
+
+try {
+  const character = await loadGameableCharacter(renderer, CHARACTER_URL, { allowWebGL: false });
+  scene.add(character.object3D);
+} catch (error) {
+  if (error instanceof GameableCharacterError && error.code === 'webgpu-required') {
+    // No WebGPU, and you asked for no fallback: show a message, a picture, or a placeholder.
+  } else {
+    throw error;
+  }
+}
+```
+
+**With no GPU at all** (hardware acceleration turned off, or the GPU blocked), the browser draws
+in software (SwiftShader, llvmpipe, Windows' basic render driver). A character there draws at well
+under a frame a second and freezes the page, so the load refuses it straight away, before any
+download, with `software-renderer`: show your placeholder. `isSoftwareRenderer(renderer)` asks the
+same question up front; `allowSoftwareRenderer: true` draws anyway.
+
+`error.code` is one of:
+
+| Code                 | Meaning                                                                  | What to do                                          |
+| -------------------- | ------------------------------------------------------------------------ | --------------------------------------------------- |
+| `webgpu-required`    | The renderer is on WebGL2 and you passed `allowWebGL: false`.            | Show something else.                                |
+| `renderer-not-ready` | `renderer.init()` has not finished.                                      | `await renderer.init()` first.                      |
+| `load-failed`        | Not fetched, a failed SHA-256 check, not a character, or no clip `clip`. | Check the URL and CORS; `error.message` says which. |
+| `software-renderer`  | The browser has no GPU to draw with and renders in software.             | Show something else.                                |
+
+## Credit
+
+Show a credit with the character: the words "I made this with Gameable", linking to
+https://app.gameable.com/.
+
+## Removing it
+
+```ts
+character.dispose(); // removes it from the scene and frees its GPU memory
+```
+
+## Troubleshooting
+
+- **Nothing appears.** Call `character.update(dt, camera)` every frame: the character stays
+  hidden until the first update and does not animate without it. Check the console for a
+  thrown `GameableCharacterError`.
+- **Slow, or on WebGL2 on a browser that has WebGPU.** Use `WebGPURenderer` from
+  `three/webgpu`, do not pass `forceWebGL: true`, and serve the page from `localhost` or HTTPS
+  (WebGPU needs a secure context). `renderer.backend.isWebGLBackend` says which one you got.
+- **A CORS error in the console.** The host of `character.json` must send
+  `Access-Control-Allow-Origin`. Published studio characters do.
+- **Two copies of three.** Install three 0.186 once; the character package uses your copy
+  (`npm ls three` shows one, the others `deduped`).
+- **The character disappears after I set `scene.onBeforeRender`.** Assigning it replaces the
+  character's pass. Set yours before the first `character.update`, or wrap the one already there.
+- **Other splat renderers.** A splat scene drawn by another library (or by three's own
+  `GaussianSplat`) writes no depth: it and the characters are ordered as whole objects, by
+  distance, not gaussian by gaussian where they overlap.
+
+## What it does not do yet
+
+Talking (voice and lip-sync need the studio's relay). The character is lit as it was captured, not by your scene's lights (see
+Fitting it into your scene's light), and receives no shadows. The inside of the mouth (teeth,
+gums, tongue) is off by default, as on the studio's stage; `{ mouth: true }` draws it for a
+package that carries the teeth's files (`teeth.json`, `teeth.ply`, `teeth.bin`).

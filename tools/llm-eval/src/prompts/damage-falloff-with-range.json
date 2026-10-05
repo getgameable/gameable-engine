@@ -1,0 +1,30 @@
+{
+  "id": "damage-falloff-with-range",
+  "title": "Damage falls off with distance",
+  "template": "fps",
+  "prompt": "Make the weapon do less damage at range: full damage up to 15 metres, then falling off linearly to a quarter of the damage at the weapon's maximum range. Put the falloff start distance and the minimum multiplier in the game rules.",
+  "expectedFiles": ["src/systems/weapon.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "(falloff|fallOff|falloffStart)",
+      "minCount": 1,
+      "note": "a falloff concept exists"
+    },
+    {
+      "file": "*",
+      "pattern": "\\b15\\b",
+      "note": "the 15 metre knee"
+    },
+    {
+      "file": "*",
+      "pattern": "(0\\.25|1\\s*/\\s*4)",
+      "note": "a quarter damage floor"
+    },
+    {
+      "file": "*",
+      "pattern": "\\.(distance|dist)\\b|hit\\.(distance|t)\\b",
+      "note": "uses the ray hit distance"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@gameable/physics-jolt",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jolt physics module: bodies, CharacterVirtual, queries, contact events, debug wireframe.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "jolt-physics": "1.1.0"
+  }
+}

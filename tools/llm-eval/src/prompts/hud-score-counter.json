@@ -1,0 +1,25 @@
+{
+  "id": "hud-score-counter",
+  "title": "Add a score counter to the HUD",
+  "template": "fps",
+  "prompt": "Add a score to the game. The player scores 100 points for every enemy killed. Show the running score on the HUD next to the ammo and enemy counts, and make sure it is reset when the game starts.",
+  "expectedFiles": ["src/hud.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "score",
+      "minCount": 3,
+      "note": "the word score appears in the change"
+    },
+    {
+      "file": "*",
+      "pattern": "hud\\.set",
+      "note": "the HUD model is actually updated"
+    },
+    {
+      "file": "*",
+      "pattern": "\\b100\\b",
+      "note": "100 points per kill"
+    }
+  ]
+}

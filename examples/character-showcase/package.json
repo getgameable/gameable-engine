@@ -1,0 +1,23 @@
+{
+  "name": "@gameable/example-character-showcase",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The rig -> GPU -> splat path end to end: a GNM head previewed with the debug vertex lift, expression sliders, an ARKit idle clip and a GPU-vs-CPU self-test.",
+  "scripts": {
+    "gen:pack": "node scripts/gen-gnm-pack.mjs",
+    "gen:pack:force": "node scripts/gen-gnm-pack.mjs --force",
+    "rank:coefficients": "node ../../packages/character/scripts/rank-gnm-coefficients.mjs public/generated/myra_head.aosrig",
+    "predev": "node scripts/gen-gnm-pack.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/gen-gnm-pack.mjs",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gameable": "*"
+  },
+  "devDependencies": {
+    "vite": "8.3.0"
+  }
+}

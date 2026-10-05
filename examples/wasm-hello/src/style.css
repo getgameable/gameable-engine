@@ -1,0 +1,297 @@
+/* Gameable tokens from STYLE.md. */
+:root {
+  --canvas: #141519;
+  --s1: #1c1d22;
+  --s2: #24252b;
+  --border: #2e2f36;
+  --text: #f2f2f4;
+  --muted: #9a9ba3;
+  --dim: #5f6069;
+  --mint: #74ecc6;
+  --onmint: #0e1f1a;
+  --pink: #ff7ab8;
+  --glass: rgba(28, 29, 34, 0.6);
+  --float: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: dark;
+  font: 500 14px/1.5 var(--font);
+  color: var(--text);
+  background: var(--canvas);
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  position: fixed;
+  inset: 0;
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] {
+  display: none !important;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: var(--text);
+}
+button:disabled {
+  cursor: default;
+  color: var(--dim);
+  background: var(--s1);
+}
+:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+#canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.gm-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+}
+.brand {
+  position: fixed;
+  right: 28px;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+.brand img {
+  transform: rotate(-8deg);
+}
+.brand small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.brand strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+.gm-chip,
+.gm-pill {
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--s2);
+  font-weight: 700;
+}
+.gm-chip {
+  font-size: 12px;
+  padding: 7px 12px;
+}
+.gm-pill {
+  font-size: 13px;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+.gm-pill:hover:not(:disabled) {
+  border-color: #3a3b44;
+}
+.gm-pill.primary:not(:disabled),
+.gm-pill[aria-pressed='true'] {
+  background: var(--mint);
+  color: var(--onmint);
+  border-color: var(--mint);
+}
+.gm-pill[data-starting='true'] {
+  border-color: var(--mint);
+}
+.metrics {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  font-family: var(--mono);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+#fps {
+  color: var(--mint);
+}
+.load-status {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  max-width: min(400px, calc(100% - 56px));
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.conversation {
+  position: fixed;
+  width: min(680px, calc(100% - 56px));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px));
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--float);
+}
+.chat-heading,
+.question,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-heading {
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+.actions {
+  flex-wrap: wrap;
+}
+.gm-input {
+  background: var(--canvas);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 12px;
+  font-size: 14px;
+  min-width: 0;
+  flex: 1;
+}
+.gm-input::placeholder {
+  color: var(--dim);
+}
+.gm-input:focus {
+  border-color: #3a3b44;
+}
+.gm-error {
+  margin: 0;
+  color: var(--pink);
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.load-status.gm-error {
+  background: var(--s1);
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.history {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-height: 24dvh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  margin-bottom: 10px;
+}
+.history:empty {
+  display: none;
+}
+.history p {
+  margin: 0;
+  max-width: 85%;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px 14px;
+  overflow-wrap: anywhere;
+}
+.history .player {
+  align-self: flex-end;
+  background: var(--s2);
+}
+.history strong {
+  display: block;
+  font-size: 12px;
+  color: var(--mint);
+}
+.mic-wave {
+  position: relative;
+  height: 36px;
+  color: var(--mint);
+}
+.mic-wave canvas {
+  width: 100%;
+  height: 36px;
+  display: block;
+}
+.mic-wave span {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  background: var(--s1);
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+@media (max-width: 1200px) {
+  .conversation {
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px));
+  }
+}
+@media (max-width: 760px) {
+  .brand {
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 14px;
+  }
+  .metrics {
+    top: 14px;
+    right: 14px;
+  }
+  .load-status {
+    top: 14px;
+    left: 14px;
+    max-width: calc(100% - 28px);
+  }
+  .conversation {
+    width: calc(100% - 28px);
+    bottom: calc(100px + env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px));
+  }
+  .gm-input {
+    font-size: 16px;
+  }
+  .gm-pill {
+    padding: 8px 12px;
+  }
+  :root[data-keyboard] .history {
+    max-height: 16dvh;
+  }
+  :root[data-keyboard] .chat-heading {
+    display: none;
+  }
+}

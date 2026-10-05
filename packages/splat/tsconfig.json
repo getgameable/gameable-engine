@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // The unit tests build fixture files with node's zlib and shell out to the
+    // diff-upstream script, so this package needs the node globals.
+    "types": ["@webgpu/types", "node"],
+    // Resolve sibling workspace packages to their TypeScript sources, the same way vitest and
+    // the dev server do, so a typecheck never depends on a sibling having been built first.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "health-pickup-heals-50",
+  "title": "Health pickup heals 50",
+  "template": "fps",
+  "prompt": "The medkit currently heals 35. Change it to heal 50, and make sure healing never takes the player above their maximum health. Put the number in the game rules.",
+  "expectedFiles": ["src/game.ts", "src/systems/pickups.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "medkitHeal\\s*:\\s*50\\b|heal[A-Za-z]*\\s*[:=]\\s*50\\b",
+      "note": "the heal amount is 50"
+    },
+    {
+      "file": "*",
+      "pattern": "Math\\.min|Health\\.max",
+      "note": "clamped to max health"
+    }
+  ]
+}

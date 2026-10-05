@@ -1,0 +1,37 @@
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# Generated documentation
+docs/api/
+docs/wit/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
+# Generated sources
+packages/*/src/generated/
+
+# Local environment
+.env*.local
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# gameable build cache in every game dir
+.gameable/
+
+# Rust guest build output
+target/
+
+# Playable examples built into the docs site (npm run docs:games)
+docs/public/play/
+
+# Published copies of the committed LLM bundles (VitePress config generates these).
+docs/public/llms*.txt
+docs/public/llms/

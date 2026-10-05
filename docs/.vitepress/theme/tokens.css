@@ -1,0 +1,21 @@
+/* Gameable tokens — the palette of aos-gameable-cc (webapp/src/studio/gameable.css).
+   Verbatim; see STYLE.md before adding anything here. */
+:root {
+  --canvas: #141519;
+  --s1: #1c1d22;
+  --s2: #24252b;
+  --border: #2e2f36;
+  --text: #f2f2f4;
+  --muted: #9a9ba3;
+  --dim: #5f6069;
+  --mint: #74ecc6;
+  --onmint: #0e1f1a;
+  --pink: #ff7ab8;
+  --mint-tint: rgba(116, 236, 198, 0.12);
+  --glass: rgba(28, 29, 34, 0.6);
+  --glow: 0 12px 30px rgba(255, 122, 184, 0.45);
+  --float: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}

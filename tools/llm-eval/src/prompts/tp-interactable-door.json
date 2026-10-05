@@ -1,0 +1,22 @@
+{
+  "id": "tp-interactable-door",
+  "title": "Third person: add an interactable door",
+  "template": "third-person",
+  "skipUntilTemplate": true,
+  "prompt": "Add a door the player can open. Walking near it shows a prompt; pressing the interact key opens it, which moves it out of the way and stops it blocking the player. Reuse the existing interaction system rather than writing a new one.",
+  "expectedFiles": ["src/systems/interact.ts", "src/prefabs.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "door",
+      "minCount": 2,
+      "note": "a door exists"
+    },
+    {
+      "file": "*",
+      "pattern": "interact",
+      "minCount": 1,
+      "note": "goes through the interact system"
+    }
+  ]
+}

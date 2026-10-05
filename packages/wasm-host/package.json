@@ -1,0 +1,57 @@
+{
+  "name": "@gameable/wasm-host",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Loads the jco-transpiled guest component, provides host bindings, applies frame-output.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./characters": {
+      "gameable-source": "./src/characters.ts",
+      "types": "./dist/characters.d.ts",
+      "import": "./dist/characters.js"
+    },
+    "./features": {
+      "gameable-source": "./src/features.ts",
+      "types": "./dist/features.d.ts",
+      "import": "./dist/features.js"
+    },
+    "./server": {
+      "gameable-source": "./src/server/index.ts",
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@gameable/animation": "0.0.0",
+    "@gameable/assets": "0.0.0",
+    "@gameable/character": "0.0.0",
+    "@gameable/core": "0.0.0",
+    "@gameable/net": "0.0.0",
+    "@gameable/rooms": "0.0.0",
+    "@gameable/sdk": "0.0.0",
+    "@gameable/splat": "0.0.0",
+    "onnxruntime-web": "1.29.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "devDependencies": {
+    "@gameable/audio": "0.0.0",
+    "@gameable/input": "0.0.0",
+    "@gameable/physics-jolt": "0.0.0",
+    "@gameable/test-harness": "0.0.0"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "@gameable/character",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Splat-avatar runtime: rig backends, lift WGSL and the body part driver.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./aosrig": {
+      "gameable-source": "./src/aosrig.ts",
+      "types": "./dist/aosrig.d.ts",
+      "import": "./dist/aosrig.js"
+    },
+    "./tools/gnm_neutral_pack.py": "./tools/gnm_neutral_pack.py",
+    "./tools/gnm_pack.py": "./tools/gnm_pack.py"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "tools/gnm_neutral_pack.py",
+    "tools/gnm_pack.py"
+  ],
+  "scripts": {
+    "prepare": "node scripts/wgsl-to-ts.mjs",
+    "build": "npm run generate && tsdown",
+    "generate": "node scripts/wgsl-to-ts.mjs",
+    "prebuild": "node scripts/wgsl-to-ts.mjs",
+    "pretest": "node scripts/wgsl-to-ts.mjs",
+    "test": "vitest run --root ../.. packages/character",
+    "postbuild": "node scripts/copy-wasm.mjs"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0",
+    "onnxruntime-web": "1.29.0"
+  },
+  "peerDependenciesMeta": {
+    "onnxruntime-web": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "onnxruntime-web": "1.29.0"
+  }
+}

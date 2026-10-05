@@ -1,0 +1,30 @@
+{
+  // The declarations of every workspace package this one re-exports, emitted
+  // by scripts/build-types.mjs into dist/types/<package>/src/. Not part of
+  // `tsc -b` (see tsconfig.json for the typecheck).
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "dist/types",
+    "composite": false,
+    "incremental": false,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "sourceMap": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "resolveJsonModule": true,
+    "types": ["@webgpu/types", "node"]
+  },
+  // Every workspace source file is a root: tsc never emits a file it only
+  // reached through node_modules, which is how @gameable/* resolve.
+  "include": ["src", "../*/src/**/*.ts"],
+  "exclude": [
+    "../**/*.test.ts",
+    "../**/*.spec.ts",
+    "../**/testing/**",
+    "../create-gameable/**",
+    "../gameable/dist/**"
+  ]
+}

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Gameable Engine — splat viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Gameable tokens — see STYLE.md. */
+      :root {
+        --canvas: #141519;
+        --s1: #1c1d22;
+        --s2: #24252b;
+        --border: #2e2f36;
+        --text: #f2f2f4;
+        --muted: #9a9ba3;
+        --dim: #5f6069;
+        --mint: #74ecc6;
+        --onmint: #0e1f1a;
+        --pink: #ff7ab8;
+        --glass: rgba(28, 29, 34, 0.6);
+        --float: 0 30px 80px rgba(0, 0, 0, 0.55);
+        --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color-scheme: dark;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: var(--canvas);
+        color: var(--text);
+        font: 500 14px/1.5 var(--font);
+        -webkit-font-smoothing: antialiased;
+      }
+      #canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      #stats,
+      #bench {
+        position: fixed;
+        padding: 10px 12px;
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font: 500 12px/1.5 var(--mono);
+        font-variant-numeric: tabular-nums;
+        z-index: 10;
+        white-space: pre;
+      }
+      #stats {
+        top: 28px;
+        left: 28px;
+        pointer-events: none;
+      }
+      #bench {
+        top: 28px;
+        right: 28px;
+        box-sizing: border-box;
+        max-height: calc(100% - 146px - env(safe-area-inset-bottom, 0px));
+        overflow: auto;
+        display: none;
+      }
+      #bench.visible {
+        display: block;
+      }
+      #error {
+        position: fixed;
+        left: 28px;
+        right: 28px;
+        bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+        max-height: 45%;
+        overflow: auto;
+        padding: 14px 16px;
+        background: var(--s1);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--float);
+        color: var(--pink);
+        font: 500 12px/1.45 var(--mono);
+        white-space: pre-wrap;
+        word-break: break-word;
+        display: none;
+        z-index: 11;
+      }
+      #error.visible {
+        display: block;
+      }
+      /* Made with Gameable — keep the badge clear of the viewport controls. */
+      .brand {
+        position: fixed;
+        right: 28px;
+        bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        color: var(--text);
+        text-decoration: none;
+        z-index: 10;
+      }
+      .brand img {
+        transform: rotate(-8deg);
+      }
+      .brand small {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .brand strong {
+        display: block;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.2;
+      }
+      .brand:focus-visible {
+        outline: 2px solid var(--pink);
+        outline-offset: 3px;
+      }
+      @media (max-width: 760px) {
+        .brand {
+          right: 14px;
+          bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+          padding: 10px 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="stats">booting…</div>
+    <pre id="bench"></pre>
+    <div id="error"></div>
+    <a
+      class="brand gm-card glass"
+      href="https://engine.gameable.com/"
+      aria-label="Made with Gameable — engine documentation"
+    >
+      <img src="%BASE_URL%brand/icon-mint.png" width="40" height="40" alt="" />
+      <span><small>Made with</small><strong>Gameable</strong></span>
+    </a>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

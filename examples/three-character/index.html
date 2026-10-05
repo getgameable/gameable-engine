@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A Gameable character in a three.js scene</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #20232a;
+        overflow: hidden;
+        font:
+          14px system-ui,
+          sans-serif;
+      }
+      #ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: flex;
+        gap: 8px;
+      }
+      button {
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 0;
+        background: #e9ecef;
+        cursor: pointer;
+      }
+      #status {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        color: #e9ecef;
+      }
+      #credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        color: #e9ecef;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui"></div>
+    <div id="status">Loading…</div>
+    <a id="credit" href="https://app.gameable.com/" target="_blank" rel="noopener"
+      >I made this with Gameable</a
+    >
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "format": "aosrig-splat",
+  "version": 1,
+  "rig": "aosrig_v0",
+  "renderer": "webgpu",
+  "units": "m",
+  "splatCount": 2,
+  "headVertexCount": 3,
+  "jointNames": [
+    "c_head"
+  ],
+  "plyToCharacter": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+  ],
+  "bounds": {
+    "center": [
+      0,
+      0,
+      0
+    ],
+    "radius": 2
+  },
+  "files": {
+    "character.ply": {
+      "src": "character.ply",
+      "sha256": "5c30944fabbe787fa1d1753a45bf59f20646e8aeabc3f7567bc83485b115bca8"
+    },
+    "bindings.bin": {
+      "src": "bindings.bin",
+      "sha256": "62b480d4394d9b6dc2c9c43f3fc821bfa53200d1c118b9b3d28469429efb411d"
+    },
+    "rig.glb": {
+      "src": "rig.glb",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "head.aosrig": {
+      "src": "head.aosrig",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

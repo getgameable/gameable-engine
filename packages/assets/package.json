@@ -1,0 +1,30 @@
+{
+  "name": "@gameable/assets",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "assets.json manifest loader and registry for splats, glTF, characters and audio.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "gameable-source": "./src/node.ts",
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  }
+}

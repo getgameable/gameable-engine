@@ -1,0 +1,33 @@
+node_modules
+dist
+build
+.vite
+coverage
+test-results
+playwright-report
+package-lock.json
+
+# Generated
+docs/api
+docs/wit
+docs/.vitepress/cache
+docs/.vitepress/dist
+docs/public/play
+packages/*/src/generated
+llms.txt
+llms-full.txt
+llms-fps.txt
+llms-third-person.txt
+
+# Vendored three.js fork must stay byte-identical to upstream (diff-upstream check)
+packages/splat/src/three-fork
+
+# Vendored emscripten glue and byte-verbatim POC fixtures
+packages/character/src/rig/orl/vendor
+packages/character/test/fixtures/bundle/scene.json
+packages/character/test/fixtures/orl/deform-synthetic.json
+
+# Dev-time generated packs (gitignored)
+examples/*/public/generated
+examples/wasm-hello/public/characters/greeter
+tools/llm-eval/results

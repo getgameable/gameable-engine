@@ -1,0 +1,470 @@
+package gameable:engine@0.2.0;
+
+/// Shared vocabulary for the gameable game-logic boundary.
+///
+/// v1 rules (see ADR "wasm game-logic boundary"):
+///   * records / variants / enums / flags / lists / primitives only
+///   * no `resource`, no `async`, no `stream`, no `future`
+///   * every id is minted by the **guest** so the host never has to hand one back
+///   * bulk per-frame data travels as packed `list<f32>` with a documented stride
+interface types {
+  // ---------------------------------------------------------------------
+  // Identifiers. All are guest-minted and stable for the lifetime of a run.
+  // ---------------------------------------------------------------------
+
+  /// ECS entity handle. 0 is reserved and means "none".
+  type entity = u32;
+  /// Rigid body / character controller handle.
+  type body-id = u32;
+  /// Manifest asset handle, resolved from a string id via `assets.resolve`.
+  type asset-id = u32;
+  /// Playing-sound handle.
+  type sound-id = u32;
+
+  // ---------------------------------------------------------------------
+  // Math
+  // ---------------------------------------------------------------------
+
+  record vec3 {
+    x: f32,
+    y: f32,
+    z: f32,
+  }
+
+  /// Unit quaternion, xyzw order (three.js / Jolt order).
+  record quat {
+    x: f32,
+    y: f32,
+    z: f32,
+    w: f32,
+  }
+
+  /// Linear RGBA, components in 0..1.
+  record rgba {
+    r: f32,
+    g: f32,
+    b: f32,
+    a: f32,
+  }
+
+  // ---------------------------------------------------------------------
+  // Enums
+  // ---------------------------------------------------------------------
+
+  enum log-level {
+    trace,
+    debug,
+    info,
+    warn,
+    error,
+  }
+
+  /// Physics body class. `static` is spelled `fixed` because `static` is a WIT keyword.
+  enum body-kind {
+    fixed,
+    kinematic,
+    dynamic,
+    character,
+  }
+
+  enum shape-kind {
+    box,
+    sphere,
+    capsule,
+    cylinder,
+    plane,
+    convex-hull,
+    mesh,
+    height-field,
+  }
+
+  enum asset-kind {
+    splat,
+    gltf,
+    character,
+    audio,
+    collider,
+    data,
+  }
+
+  enum camera-mode {
+    first-person,
+    third-person,
+    free,
+    fixed,
+  }
+
+  enum projection-kind {
+    perspective,
+    orthographic,
+  }
+
+  enum audio-bus {
+    master,
+    music,
+    sfx,
+    voice,
+    ui,
+  }
+
+  /// Coordinate space the weights in `set-expression` are expressed in.
+  /// `arkit52` = 52 ARKit blendshapes, `gnm` = 387 GNM `head-ext` floats,
+  /// `gnm68` = the reduced 68-float ML view.
+  enum expression-space {
+    arkit52,
+    gnm,
+    gnm68,
+  }
+
+  enum contact-phase {
+    begin,
+    stay,
+    end,
+  }
+
+  enum error-code {
+    init-failed,
+    tick-failed,
+    invalid-state,
+    unsupported,
+    asset-missing,
+    snapshot-version-mismatch,
+    internal,
+  }
+
+  // ---------------------------------------------------------------------
+  // Flags
+  // ---------------------------------------------------------------------
+
+  /// Keyboard modifier state for the current frame.
+  flags input-mods {
+    shift,
+    ctrl,
+    alt,
+    meta,
+    caps-lock,
+    num-lock,
+  }
+
+  /// Broad-phase layers. `layer` says what a body *is*, `mask` what it collides with.
+  flags collision-layers {
+    default-layer,
+    static-geometry,
+    player,
+    enemy,
+    projectile,
+    pickup,
+    trigger,
+    character,
+    debris,
+    water,
+    user0,
+    user1,
+    user2,
+    user3,
+    user4,
+    user5,
+  }
+
+  flags body-flags {
+    /// Report contacts for this body in `frame-input.contacts`.
+    report-contacts,
+    /// Sensor / trigger volume: generates contacts but no response.
+    sensor,
+    /// Never let the solver put this body to sleep.
+    no-sleep,
+    /// Lock all rotation (typical for capsule characters).
+    lock-rotation,
+    /// Use continuous collision detection.
+    ccd,
+    /// Draw a wireframe for this body when physics debug is on.
+    debug-draw,
+  }
+
+  /// Meaning of the `flags` lane (index 1) of a `frame-output.transforms` row.
+  /// The lane is an f32 whose integral value is this bitset:
+  ///   bit 0 = position, 1 = rotation, 2 = scale, 3 = visible,
+  ///   bit 4 = teleport (do not interpolate), 5 = destroyed.
+  flags transform-flags {
+    position,
+    rotation,
+    scale,
+    visible,
+    teleport,
+    destroyed,
+  }
+
+  // ---------------------------------------------------------------------
+  // Physics query vocabulary (the only synchronous host imports)
+  // ---------------------------------------------------------------------
+
+  record query-filter {
+    /// Only bodies whose `layer` intersects this set are considered.
+    layers: collision-layers,
+    /// Skip this body (usually the caster's own body).
+    exclude-body: option<body-id>,
+    /// Skip everything belonging to this entity.
+    exclude-entity: option<entity>,
+    /// Ignore sensor / trigger volumes.
+    solid-only: bool,
+  }
+
+  record ray-query {
+    origin: vec3,
+    /// Direction; need not be normalised.
+    direction: vec3,
+    max-distance: f32,
+    filter: query-filter,
+  }
+
+  record ray-hit {
+    body: body-id,
+    entity: entity,
+    point: vec3,
+    normal: vec3,
+    distance: f32,
+  }
+
+  record overlap-hit {
+    body: body-id,
+    entity: entity,
+    /// Centre of the overlapping body in world space.
+    point: vec3,
+    /// Penetration depth along the axis from the query centre, >= 0.
+    depth: f32,
+  }
+
+  // ---------------------------------------------------------------------
+  // Assets
+  // ---------------------------------------------------------------------
+
+  record asset-desc {
+    id: asset-id,
+    /// Manifest string id; the stable guest <-> host contract.
+    name: string,
+    kind: asset-kind,
+    tags: list<string>,
+    /// True once the bytes are resident and the asset can be referenced.
+    ready: bool,
+    /// A collider asset is attached in the manifest.
+    has-collider: bool,
+    /// Rig backend for character assets ("orl" | "gnm"), absent otherwise.
+    rig: option<string>,
+  }
+
+  // ---------------------------------------------------------------------
+  // Input
+  // ---------------------------------------------------------------------
+
+  /// 256 key codes packed into 8 u32 words.
+  /// Key `c` lives in bit `c & 31` of word `c >> 5`. Each list is exactly 8 long.
+  record key-state {
+    /// Held this frame.
+    down: list<u32>,
+    /// Went down this frame.
+    pressed: list<u32>,
+    /// Came up this frame.
+    released: list<u32>,
+  }
+
+  record mouse-state {
+    /// Client-space position in CSS pixels.
+    x: f32,
+    y: f32,
+    /// Per-frame delta. Under pointer lock this is `movementX` / `movementY`.
+    dx: f32,
+    dy: f32,
+    /// Accumulated wheel delta for the frame, in lines.
+    wheel: f32,
+    /// Bit 0 left, 1 right, 2 middle, 3 back, 4 forward.
+    buttons: u32,
+    pressed: u32,
+    released: u32,
+    /// Pointer lock is currently held by the canvas.
+    locked: bool,
+  }
+
+  record gamepad-state {
+    /// Navigator gamepad index.
+    index: u32,
+    connected: bool,
+    /// Standard-mapping button bitsets, one bit per button index.
+    buttons: u32,
+    pressed: u32,
+    released: u32,
+    /// Standard mapping, stride 1: lx, ly, rx, ry, left-trigger, right-trigger.
+    axes: list<f32>,
+  }
+
+  record input-state {
+    keys: key-state,
+    mods: input-mods,
+    mouse: mouse-state,
+    gamepads: list<gamepad-state>,
+    /// The canvas has focus. When false the guest should treat input as neutral.
+    focused: bool,
+  }
+
+  /// One player's input for a step, in a room (0.2.0).
+  record player-input {
+    player: u32,
+    /// The client's input sequence number this step consumed; 0 when unknown.
+    seq: u32,
+    input: input-state,
+  }
+
+  // ---------------------------------------------------------------------
+  // Contacts
+  // ---------------------------------------------------------------------
+
+  record contact {
+    a: body-id,
+    b: body-id,
+    entity-a: entity,
+    entity-b: entity,
+    phase: contact-phase,
+    /// World-space contact point.
+    point: vec3,
+    /// Contact normal pointing from `a` towards `b`.
+    normal: vec3,
+    /// Accumulated normal impulse over the step.
+    impulse: f32,
+  }
+
+  // ---------------------------------------------------------------------
+  // Events
+  // ---------------------------------------------------------------------
+
+  record asset-loaded-event {
+    asset: asset-id,
+    name: string,
+  }
+
+  record character-ready-event {
+    entity: entity,
+    bundle: asset-id,
+    /// Expression space the loaded bundle actually uses.
+    space: expression-space,
+    /// Number of coefficients `set-expression` expects for that space.
+    expression-dim: u32,
+  }
+
+  record sound-ended-event {
+    sound: sound-id,
+    /// The sound reached its natural end (false = it was stopped).
+    completed: bool,
+  }
+
+  record anim-event-data {
+    entity: entity,
+    clip: string,
+    /// Marker name embedded in the clip, e.g. "footstep-left".
+    name: string,
+    /// Clip-local time of the marker, in seconds.
+    time: f32,
+  }
+
+  record resized-event {
+    width: u32,
+    height: u32,
+    device-pixel-ratio: f32,
+  }
+
+  enum conversation-event-kind { input, status, subtitle, error, story }
+  record conversation-event {
+    entity: entity,
+    kind: conversation-event-kind,
+    /// Versioned story snapshot JSON for story events; plain text otherwise.
+    text: string,
+  }
+
+  // --- net (0.2.0) -----------------------------------------------------
+
+  /// A player entered the room. Emitted by the authority's room, never by a page.
+  record player-joined-event {
+    player: u32,
+    /// Display name, as the player joined with it.
+    name: string,
+    /// The player's saved document as JSON, when the room has a store.
+    data: option<string>,
+  }
+
+  record player-left-event {
+    player: u32,
+    /// Why: "left", "timeout", "kicked", ...
+    reason: string,
+  }
+
+  /// A game message a player sent; the authority receives it next tick.
+  record message-event {
+    /// The sender.
+    player: u32,
+    name: string,
+    /// JSON.
+    payload: string,
+  }
+
+  /// The outcome of an `exchange` command, matched by its `id`.
+  record exchange-result-event {
+    id: u32,
+    ok: bool,
+    /// Empty when `ok`.
+    reason: string,
+    /// Player `a`'s document after the trade, as the store wrote it (JSON); empty unless `ok`.
+    a-data: string,
+    /// Player `b`'s document after the trade (JSON); empty unless `ok`.
+    b-data: string,
+  }
+
+  /// The room's saved game-wide document as JSON.
+  record game-data-event {
+    data: string,
+  }
+
+  variant event {
+    asset-loaded(asset-loaded-event),
+    character-ready(character-ready-event),
+    sound-ended(sound-ended-event),
+    anim-event(anim-event-data),
+    resized(resized-event),
+    conversation-event(conversation-event),
+    player-joined(player-joined-event),
+    player-left(player-left-event),
+    message(message-event),
+    exchange-result(exchange-result-event),
+    game-data(game-data-event),
+  }
+
+  // ---------------------------------------------------------------------
+  // Camera
+  // ---------------------------------------------------------------------
+
+  record camera-state {
+    mode: camera-mode,
+    projection: projection-kind,
+    /// Eye position. Ignored when `follow` is set and `mode` is third-person.
+    position: vec3,
+    rotation: quat,
+    /// Optional explicit look-at target, overriding `rotation` when present.
+    target: option<vec3>,
+    /// Vertical field of view in degrees (perspective) or half-height (orthographic).
+    fov-y-deg: f32,
+    near: f32,
+    far: f32,
+    /// Entity the rig follows; the host owns the spring arm and its collision.
+    follow: option<entity>,
+    /// Third-person boom length in metres.
+    arm-length: f32,
+    /// Rig-local offset applied after `follow`.
+    offset: vec3,
+  }
+
+  // ---------------------------------------------------------------------
+  // Errors
+  // ---------------------------------------------------------------------
+
+  record game-error {
+    code: error-code,
+    message: string,
+  }
+}

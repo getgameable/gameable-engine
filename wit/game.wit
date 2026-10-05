@@ -1,0 +1,443 @@
+package gameable:engine@0.2.0;
+
+/// The game-logic guest. One export per frame: the host hands over
+/// `frame-input`, the guest hands back `frame-output`. Continuous data is
+/// packed into `list<f32>` with a fixed stride; structural changes are a
+/// `list<command>`. This keeps the canonical-ABI and QuickJS cost per frame
+/// to a handful of lowerings and makes record/replay trivial.
+interface game {
+  use types.{
+    entity, body-id, asset-id, sound-id,
+    vec3, quat, rgba,
+    body-kind, shape-kind, audio-bus, expression-space,
+    collision-layers, body-flags,
+    input-state, player-input, contact, event, camera-state, game-error,
+  };
+
+  // =====================================================================
+  // Commands - everything structural the guest wants the host to do.
+  // Applied in list order, after the guest returns.
+  // =====================================================================
+
+  // --- scene / render -------------------------------------------------
+
+  record spawn-cmd {
+    /// Guest-minted entity id. Must not already exist.
+    entity: entity,
+    /// Renderable asset, or none for an invisible transform node.
+    asset: option<asset-id>,
+    position: vec3,
+    rotation: quat,
+    scale: vec3,
+    parent: option<entity>,
+    visible: bool,
+    /// Debug label, shown in the engine overlay. Not gameplay-visible.
+    name: option<string>,
+  }
+
+  record set-asset-cmd {
+    entity: entity,
+    /// None detaches the current renderable.
+    asset: option<asset-id>,
+  }
+
+  record set-parent-cmd {
+    entity: entity,
+    /// None reparents to the scene root.
+    parent: option<entity>,
+    /// Preserve the world transform across the reparent.
+    keep-world-transform: bool,
+  }
+
+  record set-anim-cmd {
+    entity: entity,
+    /// Clip name inside the entity's asset.
+    clip: string,
+    looping: bool,
+    speed: f32,
+    /// Cross-fade duration in milliseconds; 0 snaps.
+    fade-ms: f32,
+    /// Target layer weight in 0..1.
+    weight: f32,
+  }
+
+  variant material-value {
+    scalar(f32),
+    boolean(bool),
+    color(rgba),
+    vector(vec3),
+    texture(asset-id),
+  }
+
+  record set-material-param-cmd {
+    entity: entity,
+    /// Uniform / NodeMaterial property name.
+    name: string,
+    value: material-value,
+  }
+
+  // --- physics --------------------------------------------------------
+
+  record shape {
+    kind: shape-kind,
+    /// box: (hx, hy, hz). sphere: (radius, _, _).
+    /// capsule / cylinder: (radius, half-height, _). plane: the normal.
+    /// Ignored for convex-hull / mesh / height-field.
+    half-extents: vec3,
+    /// Geometry source for convex-hull / mesh / height-field shapes.
+    asset: option<asset-id>,
+  }
+
+  record add-body-cmd {
+    /// Guest-minted body id. Must not already exist.
+    body: body-id,
+    /// Entity this body drives; its transform lands in `frame-input.bodies`.
+    entity: entity,
+    kind: body-kind,
+    shape: shape,
+    position: vec3,
+    rotation: quat,
+    /// Kilograms. Ignored for fixed and kinematic bodies.
+    mass: f32,
+    friction: f32,
+    restitution: f32,
+    linear-damping: f32,
+    angular-damping: f32,
+    /// What this body is.
+    layer: collision-layers,
+    /// What this body collides with.
+    mask: collision-layers,
+    %flags: body-flags,
+  }
+
+  record set-body-transform-cmd {
+    body: body-id,
+    position: vec3,
+    rotation: quat,
+    /// Hard teleport: clear velocities and skip host-side interpolation.
+    teleport: bool,
+  }
+
+  record set-body-velocity-cmd {
+    body: body-id,
+    /// None leaves the current linear velocity untouched.
+    linear: option<vec3>,
+    /// None leaves the current angular velocity untouched.
+    angular: option<vec3>,
+  }
+
+  record apply-impulse-cmd {
+    body: body-id,
+    impulse: vec3,
+    /// World-space application point; none applies at the centre of mass.
+    at-point: option<vec3>,
+  }
+
+  record set-body-enabled-cmd {
+    body: body-id,
+    enabled: bool,
+  }
+
+  record move-character-cmd {
+    /// Must name a body created with `body-kind.character`.
+    body: body-id,
+    /// Desired world-space velocity for this step, metres per second.
+    desired-velocity: vec3,
+    jump: bool,
+    crouch: bool,
+    /// Maximum walkable slope, degrees.
+    max-slope-deg: f32,
+  }
+
+  // --- characters -----------------------------------------------------
+
+  record spawn-character-cmd {
+    /// Guest-minted entity id for the character.
+    entity: entity,
+    /// Character bundle asset.
+    bundle: asset-id,
+    position: vec3,
+    rotation: quat,
+  }
+
+  record set-character-state-cmd {
+    entity: entity,
+    /// Locomotion state-machine state, e.g. "idle" | "walk" | "run".
+    state: string,
+    /// World-space velocity, drives the locomotion blend.
+    velocity: vec3,
+    grounded: bool,
+  }
+
+  record set-clip-weights-cmd {
+    entity: entity,
+    /// Clip names; `weights` is positional and must be the same length.
+    clips: list<string>,
+    weights: list<f32>,
+    /// Playback rate multiplier for the whole layer.
+    time-scale: f32,
+  }
+
+  record set-expression-cmd {
+    entity: entity,
+    space: expression-space,
+    /// Length must match the space: 52 (arkit52), 387 (gnm), 68 (gnm68).
+    weights: list<f32>,
+  }
+
+  record look-at-cmd {
+    entity: entity,
+    /// None releases the look-at and returns to the procedural idle.
+    target: option<vec3>,
+    /// Blend weight in 0..1.
+    weight: f32,
+  }
+
+  record say-cmd {
+    entity: entity,
+    /// Subtitle text; the host decides whether to display it.
+    text: string,
+    /// Voice line to play in sync, if any.
+    audio: option<asset-id>,
+    /// Optional viseme track as JSON, matching the bundle's expression space.
+    visemes: option<string>,
+  }
+
+  // --- audio ----------------------------------------------------------
+
+  record play-sound-cmd {
+    /// Guest-minted handle, echoed back in `sound-ended-event`.
+    sound: sound-id,
+    asset: asset-id,
+    /// Attach to an entity for positional audio that follows it.
+    entity: option<entity>,
+    /// Fixed world position; ignored when `entity` is set.
+    position: option<vec3>,
+    /// Linear gain, 0..1.
+    volume: f32,
+    /// Playback-rate multiplier; 1 is unmodified.
+    pitch: f32,
+    looping: bool,
+    bus: audio-bus,
+  }
+
+  record stop-sound-cmd {
+    sound: sound-id,
+    /// Fade-out in milliseconds; 0 stops immediately.
+    fade-ms: f32,
+  }
+
+  record set-listener-cmd {
+    position: vec3,
+    rotation: quat,
+    /// Used for the Doppler term.
+    velocity: vec3,
+  }
+
+  // --- engine ---------------------------------------------------------
+
+  record load-asset-cmd {
+    asset: asset-id,
+    /// Higher runs first. Completion arrives as an `asset-loaded` event.
+    priority: u32,
+  }
+
+  /// Everything the guest can ask the host to do. Order is significant:
+  /// the host applies the list front to back within one frame.
+  enum conversation-action { start, end, ask, interrupt, microphone-on, microphone-off }
+  record conversation-cmd {
+    entity: entity,
+    action: conversation-action,
+    character: string,
+    text: string,
+  }
+
+  // --- net and data (0.2.0) -----------------------------------------
+
+  record send-cmd {
+    /// One player; none sends to every player (from the authority) or up to
+    /// the authority (from a client).
+    to: option<u32>,
+    name: string,
+    /// JSON, at most 2,048 bytes.
+    payload: string,
+    reliable: bool,
+  }
+
+  /// The camera one player renders from; replaces `frame-output.camera` for them.
+  record set-player-camera-cmd {
+    player: u32,
+    camera: camera-state,
+  }
+
+  /// One player's HUD model as JSON; only that player sees it.
+  record set-player-hud-cmd {
+    player: u32,
+    hud: string,
+  }
+
+  /// Which entity a player controls: their relevancy origin, and the entity
+  /// their client treats as theirs. Sent by the authority when it spawns
+  /// `definition.player` for a join and on every `possess`. Despawning the
+  /// entity clears it on the host; the player then has none until the next one.
+  record set-player-entity-cmd {
+    player: u32,
+    entity: entity,
+  }
+
+  /// Persist one player's document (JSON). Authority only; the room's store decides when.
+  record save-player-data-cmd {
+    player: u32,
+    data: string,
+  }
+
+  /// Persist the room's game-wide document (JSON). Authority only.
+  record save-game-data-cmd {
+    data: string,
+  }
+
+  /// Trade between two players' documents, atomically in the store.
+  /// The outcome arrives as an `exchange-result` event with the same `id`.
+  record exchange-cmd {
+    /// Guest-minted.
+    id: u32,
+    a: u32,
+    b: u32,
+    /// JSON: what `a` gives `b`.
+    give: string,
+    /// JSON: what `a` takes from `b`.
+    take: string,
+  }
+
+  variant command {
+    // scene / render
+    spawn(spawn-cmd),
+    despawn(entity),
+    set-asset(set-asset-cmd),
+    set-parent(set-parent-cmd),
+    set-anim(set-anim-cmd),
+    set-material-param(set-material-param-cmd),
+    // physics
+    add-body(add-body-cmd),
+    remove-body(body-id),
+    set-body-transform(set-body-transform-cmd),
+    set-body-velocity(set-body-velocity-cmd),
+    apply-impulse(apply-impulse-cmd),
+    set-body-enabled(set-body-enabled-cmd),
+    move-character(move-character-cmd),
+    // characters
+    spawn-character(spawn-character-cmd),
+    set-character-state(set-character-state-cmd),
+    set-clip-weights(set-clip-weights-cmd),
+    set-expression(set-expression-cmd),
+    look-at(look-at-cmd),
+    say(say-cmd),
+    // audio
+    play-sound(play-sound-cmd),
+    stop-sound(stop-sound-cmd),
+    set-listener(set-listener-cmd),
+    // engine
+    load-asset(load-asset-cmd),
+    set-pointer-lock(bool),
+    set-time-scale(f32),
+    conversation(conversation-cmd),
+    // net and data (0.2.0)
+    send(send-cmd),
+    set-player-camera(set-player-camera-cmd),
+    set-player-hud(set-player-hud-cmd),
+    save-player-data(save-player-data-cmd),
+    save-game-data(save-game-data-cmd),
+    exchange(exchange-cmd),
+    set-player-entity(set-player-entity-cmd),
+  }
+
+  // =====================================================================
+  // Frame protocol
+  // =====================================================================
+
+  record frame-input {
+    /// Monotonic fixed-step counter, starting at 0.
+    frame: u64,
+    /// Fixed timestep in seconds (1 / fixed-hz).
+    dt: f32,
+    /// Simulated seconds since `init`.
+    elapsed: f32,
+    input: input-state,
+    /// Post-step rigid body transforms, STRIDE 15, one row per live body:
+    ///   [0]  body-id
+    ///   [1..4]   position   x, y, z
+    ///   [4..8]   rotation   x, y, z, w
+    ///   [8..11]  linear velocity  x, y, z
+    ///   [11..14] angular velocity x, y, z
+    ///   [14] character ground state: 0 unknown/non-character, 1 on-ground,
+    ///        2 on-steep-ground, 3 not-supported, 4 in-air.
+    /// Rows are sorted ascending by body-id. Length is always a multiple of 15.
+    bodies: list<f32>,
+    /// Only for bodies with `body-flags.report-contacts`.
+    contacts: list<contact>,
+    /// Host-side occurrences since the previous tick, in order.
+    events: list<event>,
+    /// Every player's input in a room, ascending by player id. Empty for a
+    /// single-player game, where `input` is the only player (player 0). A
+    /// seat the room holds for a player who dropped is left out until they
+    /// are back: the guest reads it as held (the host role passes on).
+    players: list<player-input>,
+  }
+
+  record frame-output {
+    /// Entity transforms the host should apply, STRIDE 12, one row per entity:
+    ///   [0]  entity id
+    ///   [1]  transform-flags bitset, as an f32 integral value
+    ///   [2..5]   position x, y, z
+    ///   [5..9]   rotation x, y, z, w
+    ///   [9..12]  scale    x, y, z
+    /// Only rows whose flags are non-zero need be emitted. The SDK writes this
+    /// into a preallocated Float32Array with no steady-state allocation.
+    /// Length is always a multiple of 12.
+    transforms: list<f32>,
+    /// Structural changes for this frame, applied in order.
+    commands: list<command>,
+    /// Applied by the authority after `commands`, and never forwarded to a client.
+    local-commands: list<command>,
+    camera: camera-state,
+    /// HUD model as JSON. Emit only when it changed since the last frame;
+    /// none means "unchanged, keep showing the previous HUD".
+    hud: option<string>,
+  }
+
+  // =====================================================================
+  // Lifecycle
+  // =====================================================================
+
+  record game-config {
+    /// Deterministic run seed; mirrors `env.seed()`.
+    seed: u64,
+    /// Fixed simulation rate, e.g. 60.
+    fixed-hz: u32,
+    viewport-width: u32,
+    viewport-height: u32,
+    /// Dev mode: verbose logging, debug draw, HMR snapshot/restore enabled.
+    dev-mode: bool,
+    /// Game-specific options as JSON, straight from the host bootstrap.
+    options: option<string>,
+  }
+
+  /// Called once before the first `tick`. Resolve assets, build the ECS world,
+  /// and seed the RNG from `config.seed` here - never at module top level,
+  /// because module scope runs during the build-time Wizer snapshot.
+  init: func(config: game-config) -> result<_, game-error>;
+
+  /// One fixed simulation step. Must be pure with respect to everything except
+  /// the guest's own heap: same `frame-input` in, same `frame-output` out.
+  tick: func(input: frame-input) -> frame-output;
+
+  /// Release guest-side resources. No further calls follow.
+  shutdown: func();
+
+  /// Serialise the whole guest state. Used by dev HMR, save games, and the
+  /// determinism test. Opaque to the host.
+  snapshot: func() -> list<u8>;
+
+  /// Restore a state previously produced by `snapshot` from the same build.
+  restore: func(state: list<u8>) -> result<_, game-error>;
+}

@@ -1,0 +1,25 @@
+{
+  "id": "jump-pad",
+  "title": "Add a jump pad that launches the player",
+  "template": "fps",
+  "prompt": "Add a jump pad: a flat trigger volume in the arena that launches the player upwards when they walk over it. Give it its own prefab and a distinct colour, spawn one in the arena, and put the launch strength in the game rules.",
+  "expectedFiles": ["src/prefabs.ts", "src/game.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "(jumpPad|jump pad|JumpPad|launch)",
+      "minCount": 2,
+      "note": "a jump pad exists"
+    },
+    {
+      "file": "*",
+      "pattern": "prefab\\(",
+      "note": "a new prefab is declared"
+    },
+    {
+      "file": "*",
+      "pattern": "sensor",
+      "note": "a trigger volume, not a solid body"
+    }
+  ]
+}

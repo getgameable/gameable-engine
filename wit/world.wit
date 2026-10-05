@@ -1,0 +1,20 @@
+package gameable:engine@0.2.0;
+
+/// The contract every gameable game module implements.
+///
+/// The reference guest is TypeScript compiled by `jco componentize --backend qjs`
+/// (QuickJS + Wizer), but the world is deliberately resource-free and async-free
+/// so a Rust `wit-bindgen` or C++ guest is equally trivial.
+///
+/// Build:
+///   jco componentize --backend qjs --backend-qjs-disable-async \
+///     --wit <abs>/wit -n game-module -o build/game.wasm <abs>/src/game.ts
+///   jco transpile build/game.wasm --instantiation async --no-nodejs-compat \
+///     -o dist/guest
+world game-module {
+  import env;
+  import physics-query;
+  import assets;
+
+  export game;
+}

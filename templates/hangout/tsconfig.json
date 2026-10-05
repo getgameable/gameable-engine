@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    // `src/assets.json` is imported by `src/main.ts` and `src/dialogue.json` by
+    // `src/systems/dialogue.ts`; both are data, not code.
+    "resolveJsonModule": true,
+    // Resolve the workspace packages to their TypeScript sources, exactly as the
+    // dev server does through the plugin's `resolve.conditions`.
+    "customConditions": ["gameable-source"],
+    "types": ["vite/client", "@webgpu/types", "node"]
+  },
+  "include": ["src", "tests", "scripts", "vite.config.ts", "vitest.config.ts"]
+}

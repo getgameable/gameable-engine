@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    // Inside this repository the packages resolve to their TypeScript sources; an app that
+    // installs them from npm needs none of this.
+    "customConditions": ["gameable-source"],
+    "types": ["vite/client", "@webgpu/types"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

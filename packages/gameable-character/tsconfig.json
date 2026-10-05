@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["@webgpu/types"],
+    // Resolve sibling workspace packages to their TypeScript sources, as the other packages do.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

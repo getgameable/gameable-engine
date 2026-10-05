@@ -1,0 +1,25 @@
+{
+  "id": "hurt-sound-on-damage",
+  "title": "Play a sound when the player is hurt",
+  "template": "fps",
+  "prompt": "Play a sound whenever the player takes damage. Use the existing \"sfx.hit\" asset id. Do not play it more than once per fixed step, and do not play it when the damage would be zero.",
+  "expectedFiles": ["src/systems/enemyAI.ts"],
+  "checks": [
+    {
+      "file": "*",
+      "pattern": "audio\\.play",
+      "note": "goes through the audio facade"
+    },
+    {
+      "file": "*",
+      "pattern": "sfx\\.hit",
+      "note": "uses the manifest id, not a path"
+    },
+    {
+      "file": "*",
+      "pattern": "\\.(mp3|wav|ogg)",
+      "mode": "absent",
+      "note": "no file paths cross the boundary"
+    }
+  ]
+}

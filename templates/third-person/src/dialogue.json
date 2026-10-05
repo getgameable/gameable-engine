@@ -1,0 +1,35 @@
+{
+  "$comment": "Conversations, one per key. `src/systems/dialogue.ts` walks `lines` in order and then, if there is a `question`, offers the two answers on keys 1 and 2. `face` names a preset in FACES, in src/systems/dialogue.ts. Ids are the contract: the tag on the NPC prefab picks the key.",
+  "guide": {
+    "speaker": "Guide",
+    "lines": [
+      { "text": "You are awake. Good. I was starting to talk to the chests.", "face": "smile" },
+      {
+        "text": "The way out is the slab in the north wall. It is locked, and one of these chests has the key.",
+        "face": "neutral"
+      }
+    ],
+    "question": {
+      "text": "Shall I tell you which chest?",
+      "face": "smile",
+      "yes": {
+        "text": "The one in the middle of the floor. You are practically standing on it.",
+        "face": "smile"
+      },
+      "no": {
+        "text": "Suit yourself. Open both, then, and take the long way round.",
+        "face": "neutral"
+      }
+    }
+  },
+  "wanderer": {
+    "speaker": "Wanderer",
+    "lines": [
+      {
+        "text": "Do not mind me. I came in through the door and it shut behind me.",
+        "face": "neutral"
+      },
+      { "text": "Press E at anything that looks like it opens. It usually does.", "face": "smile" }
+    ]
+  }
+}

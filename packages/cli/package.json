@@ -1,0 +1,43 @@
+{
+  "name": "@gameable/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The gameable command line: dev, build, serve, doctor, docs.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "sync:wit": "node scripts/sync-wit.mjs",
+    "check:wit": "node scripts/sync-wit.mjs --check",
+    "prepack": "tsdown && node scripts/sync-wit.mjs",
+    "postpack": "node scripts/sync-wit.mjs --clean"
+  },
+  "dependencies": {
+    "@gameable/assets": "0.0.0",
+    "@gameable/net": "0.0.0",
+    "@gameable/rooms": "0.0.0",
+    "@gameable/sdk": "0.0.0",
+    "@gameable/wasm-host": "0.0.0",
+    "@bytecodealliance/jco": "1.33.0",
+    "componentize-qjs": "0.4.4"
+  },
+  "optionalDependencies": {
+    "@gameable/test-harness": "0.0.0",
+    "binaryen": "130.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

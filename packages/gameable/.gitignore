@@ -1,0 +1,6 @@
+assets/
+wit/
+dist/
+LICENSE
+THIRD_PARTY_NOTICES.md
+package.json.workspace

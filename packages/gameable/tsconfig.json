@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // Resolve @gameable/* workspace siblings to their TypeScript sources.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

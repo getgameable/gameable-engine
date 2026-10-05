@@ -1,0 +1,43 @@
+{
+  "id": "fps-from-scratch",
+  "title": "Write an FPS from scratch with only the docs bundle",
+  "template": "fps",
+  "scaffoldEmpty": true,
+  "skipStages": ["unit"],
+  "skipReason": "the template's own unit tests import the template's modules, which a from-scratch game does not have",
+  "prompt": "Write a complete first-person shooter from nothing. There is no existing game code: you are writing src/game.ts and src/prefabs.ts from scratch. The game must define the world and the player, spawn three enemy capsules that chase the player and damage it on contact, let the player shoot them with a hitscan weapon, show health and ammo on the HUD, and declare a win when all three are dead. Use only what the documentation above describes.",
+  "expectedFiles": ["src/game.ts", "src/prefabs.ts"],
+  "checks": [
+    {
+      "file": "src/game.ts",
+      "pattern": "defineGame\\(",
+      "note": "the entry point is a defineGame call"
+    },
+    {
+      "file": "*",
+      "pattern": "gameable",
+      "note": "imports the SDK, not a package path"
+    },
+    {
+      "file": "*",
+      "pattern": "prefab\\(",
+      "note": "declares prefabs"
+    },
+    {
+      "file": "*",
+      "pattern": "hud\\.set",
+      "note": "draws a HUD"
+    },
+    {
+      "file": "*",
+      "pattern": "moveCharacter|physics\\.",
+      "note": "moves through the physics facade"
+    },
+    {
+      "file": "*",
+      "pattern": "from ['\"]three",
+      "mode": "absent",
+      "note": "guest code never imports three"
+    }
+  ]
+}

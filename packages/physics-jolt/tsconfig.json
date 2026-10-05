@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // The wasm binary is resolved from disk when the module runs under node
+    // (tests, the boundary harness), so this package needs the node globals.
+    "types": ["@webgpu/types", "node"],
+    // Resolve sibling workspace packages to their TypeScript sources, the same
+    // way vitest and the dev server do, so a typecheck never depends on a
+    // sibling having been built first.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

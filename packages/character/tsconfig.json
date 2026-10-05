@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // `node` on top of the base's `@webgpu/types`: the unit tests read their fixtures
+    // off disk (`node:fs`, `Buffer`), and the ORL wasm glue resolves its binary through
+    // `new URL(..., import.meta.url)`.
+    "types": ["@webgpu/types", "node"]
+  },
+  "include": ["src"]
+}

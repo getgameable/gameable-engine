@@ -1,0 +1,14 @@
+{
+  "id": "double-player-move-speed",
+  "title": "Double the player's move speed",
+  "template": "fps",
+  "prompt": "Double the player's walking speed. The template already has a tuning number for it; change it there rather than anywhere else.",
+  "expectedFiles": ["src/game.ts"],
+  "checks": [
+    {
+      "file": "src/game.ts",
+      "pattern": "walkSpeed\\s*:\\s*10\\b",
+      "note": "walkSpeed is 10, not 5"
+    }
+  ]
+}

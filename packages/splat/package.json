@@ -1,0 +1,39 @@
+{
+  "name": "@gameable/splat",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static splat loading plus the AnimatedGaussianSplat fork with exposed GPU buffers.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "gameable-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./bench": {
+      "gameable-source": "./src/bench/index.ts",
+      "types": "./dist/bench/index.d.ts",
+      "import": "./dist/bench/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "diff-upstream": "node scripts/diff-upstream.mjs",
+    "pretest": "node scripts/diff-upstream.mjs",
+    "test": "vitest run --root ../.. packages/splat"
+  },
+  "dependencies": {
+    "@gameable/core": "0.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  }
+}

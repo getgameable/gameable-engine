@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    // Resolve @gameable/* workspace siblings to their TypeScript sources, the
+    // same `development` condition `npm run dev` and vitest use.
+    "customConditions": ["gameable-source"]
+  },
+  "include": ["src"]
+}

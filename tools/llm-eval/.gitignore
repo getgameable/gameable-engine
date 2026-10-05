@@ -1,0 +1,8 @@
+# Installed locally: `tools/*` is deliberately outside the root workspaces glob,
+# so this directory carries its own node_modules and its own package-lock.json.
+node_modules/
+
+# Run outputs. A scoreboard is evidence of one run on one machine, not source.
+results/*.json
+results/*.md
+results/transcripts/
