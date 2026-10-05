@@ -17,9 +17,26 @@ import type { NetService } from './NetService.js';
 import { Predictor } from './Predictor.js';
 import { WALKER_BODY } from './predictTesting.js';
 
-/** @returns Bytes of JS heap in use, after a full GC when the runner exposes one. */
+/**
+ * Bytes of JS heap in use, after a full collection.
+ *
+ * `--expose-gc` is off in a default vitest run, so `gc` is pulled out of a
+ * fresh context with the flag on just long enough (as wasm-host's
+ * `testing/collectGarbage.ts` does). Without a collection the delta reads
+ * whatever V8 has not swept yet: 140-170 KB on a GitHub runner, past the
+ * 100 KB bound.
+ *
+ * @returns Live heap bytes.
+ */
 function heapUsed(): number {
-  (globalThis as { gc?: () => void }).gc?.();
+  let gc = (globalThis as { gc?: () => void }).gc;
+  if (typeof gc !== 'function') {
+    const v8 = process.getBuiltinModule('v8');
+    v8.setFlagsFromString('--expose-gc');
+    gc = process.getBuiltinModule('vm').runInNewContext('gc') as () => void;
+    v8.setFlagsFromString('--no-expose-gc');
+  }
+  gc();
   return process.memoryUsage().heapUsed;
 }
 

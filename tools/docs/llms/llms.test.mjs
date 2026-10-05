@@ -75,7 +75,8 @@ describe('llms.txt', () => {
 });
 
 describe('publishLlms', () => {
-  it('publishes every bundle the generator writes, from the one list', () => {
+  // It generates every bundle: seconds on a busy CI agent, past vitest's 5 s default.
+  it('publishes every bundle the generator writes, from the one list', { timeout: 60_000 }, () => {
     const dir = mkdtempSync(join(tmpdir(), 'gameable-publish-'));
     try {
       publishLlms(dir);
