@@ -1,6 +1,6 @@
 {
   "name": "create-gameable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "type": "module",
   "description": "npm create gameable — copies a template and wires up a new game.",

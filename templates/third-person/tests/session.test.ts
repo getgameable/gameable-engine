@@ -13,6 +13,7 @@ import { featuresOf, type GameDefinition } from 'gameable';
 import { GUEST_STATUS_PATH as ANSWERED_AT } from 'gameable/vite';
 import { describe, expect, it } from 'vitest';
 
+import { name as packageName } from '../package.json';
 import game from '../src/game';
 import { GAME_NAME, multiplayerOn, pageFeatures, pageModules, predictOn } from '../src/session';
 
@@ -88,7 +89,8 @@ describe('the template with features.multiplayer', () => {
   });
 
   it("joins under the package's name without its scope", () => {
-    expect(GAME_NAME).toBe('template-third-person');
+    // The package's own name, not a literal: a scaffolded game is renamed to its directory.
+    expect(GAME_NAME).toBe(packageName.replace(/^@[^/]+\//, ''));
   });
 });
 

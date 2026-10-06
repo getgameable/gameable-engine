@@ -1,6 +1,6 @@
 {
   "name": "gameable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Gameable Engine: a browser game engine where the world is a gaussian splat, the renderer is WebGPU and all game logic is a WebAssembly component.",
   "keywords": [
