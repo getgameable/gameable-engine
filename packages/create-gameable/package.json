@@ -4,6 +4,21 @@
   "private": false,
   "type": "module",
   "description": "npm create gameable — copies a template and wires up a new game.",
+  "keywords": [
+    "gameable",
+    "game-engine",
+    "scaffold",
+    "create",
+    "webgpu",
+    "gaussian-splatting"
+  ],
+  "homepage": "https://engine.gameable.com/start/01-install",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/getgameable/gameable-engine.git",
+    "directory": "packages/create-gameable"
+  },
+  "bugs": "https://github.com/getgameable/gameable-engine/issues",
   "license": "MIT",
   "bin": {
     "create-gameable": "./bin/create-gameable.mjs"

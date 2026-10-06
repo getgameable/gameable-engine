@@ -55,7 +55,7 @@ jobs:
         run: |
           version=$(node -p "require('./packages/gameable/package.json').version")
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          if [ "$version" = 0.0.0 ] || npm view "gameable@$version" version >/dev/null 2>&1; then
+          if [ "$version" = 0.0.0 ] || { npm view "gameable@$version" version && npm view "create-gameable@$version" version; } >/dev/null 2>&1; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
@@ -66,18 +66,30 @@ jobs:
 
       - name: Stage gameable on npm, to be approved on npmjs.com
         if: steps.version.outputs.publish == 'true'
-        run: npm stage publish -w packages/gameable --provenance --access public
+        run: |
+          # Each package on its own: a re-run stages only what is neither on npm
+          # nor already waiting for approval.
+          v="${{ steps.version.outputs.version }}"
+          if npm view "gameable@$v" version >/dev/null 2>&1; then echo "gameable@$v is on npm"; exit 0; fi
+          if npm stage list gameable 2>/dev/null | grep -qx "version: $v"; then echo "gameable@$v is already staged"; exit 0; fi
+          npm stage publish -w packages/gameable --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Stage create-gameable on npm, to be approved on npmjs.com
         if: steps.version.outputs.publish == 'true'
-        run: npm stage publish -w packages/create-gameable --provenance --access public
+        run: |
+          # Each package on its own: a re-run stages only what is neither on npm
+          # nor already waiting for approval.
+          v="${{ steps.version.outputs.version }}"
+          if npm view "create-gameable@$v" version >/dev/null 2>&1; then echo "create-gameable@$v is on npm"; exit 0; fi
+          if npm stage list create-gameable 2>/dev/null | grep -qx "version: $v"; then echo "create-gameable@$v is already staged"; exit 0; fi
+          npm stage publish -w packages/create-gameable --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag and release
         if: steps.version.outputs.publish == 'true'
-        run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ github.event.workflow_run.head_sha || github.sha }}" --generate-notes --notes "Staged on npm, installable once an owner approves it."
+        run: gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1 || gh release create "v${{ steps.version.outputs.version }}" --target "${{ github.event.workflow_run.head_sha || github.sha }}" --generate-notes --notes "Staged on npm, installable once an owner approves it."
         env:
           GH_TOKEN: ${{ github.token }}
