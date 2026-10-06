@@ -493,6 +493,9 @@ interface EntityRecord {
   groundOffset: number;
 }
 
+/** The `add-body` body id that means "draw the placeholder only": guests hand out ids from 1. */
+export const PLACEHOLDER_ONLY_BODY = 0;
+
 /**
  * Build the adapter that applies `frame-output` to a booted engine.
  *
@@ -1029,7 +1032,8 @@ export function createEngineAdapter(
     setTransformFromHost(entity, flags, position, rotation, scale) {
       const record = records.get(entity);
       if (record === undefined) return;
-      if ((flags & FLAG_POSITION) !== 0) transforms.setPosition(entity, position[0], position[1], position[2]);
+      if ((flags & FLAG_POSITION) !== 0)
+        transforms.setPosition(entity, position[0], position[1], position[2]);
       if ((flags & FLAG_ROTATION) !== 0) {
         transforms.setQuaternion(entity, rotation[0], rotation[1], rotation[2], rotation[3]);
       }
@@ -1175,9 +1179,12 @@ export function createEngineAdapter(
     // -- physics -------------------------------------------------------------
 
     addBody(args) {
-      mapBody(args.body, args.entity);
+      // Body 0 is no body (ids start at 1): a room's authority sends it so a
+      // page can draw an asset-less prop's placeholder. Draw it, nothing else.
+      const drawOnly = args.body === PLACEHOLDER_ONLY_BODY;
+      if (!drawOnly) mapBody(args.body, args.entity);
       const record = records.get(args.entity);
-      if (record !== undefined) record.body = args.body;
+      if (record !== undefined && !drawOnly) record.body = args.body;
 
       const kind = shapeKind(args.shape.kind);
       if (record !== undefined) {
@@ -1197,6 +1204,7 @@ export function createEngineAdapter(
         );
       }
 
+      if (drawOnly) return;
       const world = needPhysics('add-body');
       if (world === null) return;
       if (!isGuestShape(kind)) {

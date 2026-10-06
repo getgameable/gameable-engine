@@ -1,6 +1,6 @@
 # Gameable Engine
 
-> Gameable Engine (`aos-gameable-engine`) is a browser game engine: gaussian-splat worlds rendered by three.js on WebGPU, with all game logic compiled to a WebAssembly component.
+> Gameable Engine (the npm package `gameable`) is a browser game engine: gaussian-splat worlds rendered by three.js on WebGPU, with all game logic compiled to a WebAssembly component.
 
 Status: M0-M3 shipped. Building a game? Read one task bundle below, copy a template, edit src/game.ts, run `npm run dev`, follow one recipe. Never read the whole repository; never edit packages/*.
 

@@ -22,6 +22,10 @@ if ('skip' in server) {
   });
 } else {
   const { url } = server;
+  // Each test makes a fresh database on the embedded server; CREATE DATABASE on a
+  // busy CI agent took over the 5 s default (Jenkins main #37), so give it room.
+  const PG_TEST_MS = 30_000;
+
   beforeAll(async () => {
     await migrate(url);
   }, 60_000);
@@ -31,7 +35,7 @@ if ('skip' in server) {
 
   storeContract('postgres', () => Promise.resolve(postgresStore(url)));
 
-  describe('postgres store: storeFromEnv', () => {
+  describe('postgres store: storeFromEnv', { timeout: PG_TEST_MS }, () => {
     it('with GAMEABLE_PG_URL: migrates a fresh database and hands back a store that saves', async () => {
       const db = await server.fresh('aos_from_env');
       const store = await storeFromEnv({ GAMEABLE_PG_URL: db }, { log: () => undefined });
@@ -41,7 +45,7 @@ if ('skip' in server) {
     });
   });
 
-  describe('postgres store: migrations', () => {
+  describe('postgres store: migrations', { timeout: PG_TEST_MS }, () => {
     it('applies 001 once, records it in schema_migrations, and is a no-op the second time', async () => {
       const db = await server.fresh('aos_migrate_once');
       expect(await migrate(db)).toEqual({ applied: ['001_player_data.sql'] });
@@ -64,7 +68,7 @@ if ('skip' in server) {
     });
   });
 
-  describe('postgres store: pool and timeouts', () => {
+  describe('postgres store: pool and timeouts', { timeout: PG_TEST_MS }, () => {
     it('answers unavailable when a statement outlives statementTimeoutMs, and stays usable', async () => {
       const store = postgresStore(url, { statementTimeoutMs: 300 });
       const game = `timeout-${String(Date.now())}`;

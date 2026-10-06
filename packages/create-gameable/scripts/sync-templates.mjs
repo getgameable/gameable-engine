@@ -95,8 +95,8 @@ function collect(dir, prefix = '') {
 }
 
 /**
- * Does this template reach outside itself with a `file:` dependency (the visit template's
- * `@gameable/voxy`, a tarball in `examples/wasm-hello/vendor/` until it is on npm)? Such a template only works
+ * Does this template reach outside itself with a `file:` dependency (a
+ * tarball beside the engine, say)? Such a template only works
  * inside this checkout, so it is not shipped.
  *
  * @param {string} name Template directory name.

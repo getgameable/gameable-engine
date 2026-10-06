@@ -149,8 +149,9 @@ describe('Predictor: allocation', () => {
       growth.push(heapUsed() - before);
     }
     growth.sort((a, b) => a - b);
-    // A fresh array per step would be ~32 bytes x 20,000, about 640 KB a window.
-    expect(growth[2]).toBeLessThan(100_000);
+    // A fresh array per step would be ~32 bytes x 20,000, about 640 KB a window. The bound is half that: under 100 KB
+    // passed in main #30-#34 and then read 154,888 in #35 (2026-10-06, same code), the 140-170 KB of an unswept heap.
+    expect(growth[2]).toBeLessThan(320_000);
     // The offsets really were corrected: every other trailer, from the first window on.
     expect(net.stats.corrections).toBeGreaterThan(10_000);
   });

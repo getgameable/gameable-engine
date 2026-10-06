@@ -65,7 +65,10 @@ export function setAnimCommand(record: EntityRecord): Command | null {
   const anim = record.anim;
   if (anim === null) return null;
   const { clip, looping, speed } = anim;
-  return { tag: 'set-anim', val: { entity: record.entity, clip, looping, speed, fadeMs: 0, weight: 1 } };
+  return {
+    tag: 'set-anim',
+    val: { entity: record.entity, clip, looping, speed, fadeMs: 0, weight: 1 },
+  };
 }
 
 /**
@@ -83,6 +86,42 @@ export function spawnCharacterCommand(record: EntityRecord): Command | null {
       bundle: character.bundle,
       position: vec(record.position),
       rotation: { x: r[0], y: r[1], z: r[2], w: r[3] },
+    },
+  };
+}
+
+/**
+ * The `add-body` that gives a client enough to draw the same placeholder the
+ * authority would: a box, capsule or sphere sized from the body's shape.
+ *
+ * Only meaningful for an entity with neither an asset nor a character — the
+ * caller checks that — since either already draws something a placeholder
+ * would only cover up.
+ *
+ * @param record A record with a known body shape.
+ * @returns The command, or null when no shape is known yet.
+ */
+export function bodyShapeCommand(record: EntityRecord): Command | null {
+  const shape = record.bodyShape;
+  if (shape === null) return null;
+  const r = record.rotation;
+  return {
+    tag: 'add-body',
+    val: {
+      body: 0, // PLACEHOLDER_ONLY_BODY: the page draws it and makes no body
+      entity: record.entity,
+      kind: 'fixed',
+      shape: { kind: shape.kind, halfExtents: { ...shape.halfExtents } },
+      position: vec(record.position),
+      rotation: { x: r[0], y: r[1], z: r[2], w: r[3] },
+      mass: 0,
+      friction: 0,
+      restitution: 0,
+      linearDamping: 0,
+      angularDamping: 0,
+      layer: {},
+      mask: {},
+      flags: {},
     },
   };
 }
@@ -118,11 +157,17 @@ export function pushVisualCommands(record: EntityRecord, since: number, out: Com
   const entity = record.entity;
   for (const m of visual.materials) {
     if (m.serial <= since) continue;
-    out.push({ tag: 'set-material-param', val: { entity, name: m.name, value: copyValue(m.value) } });
+    out.push({
+      tag: 'set-material-param',
+      val: { entity, name: m.name, value: copyValue(m.value) },
+    });
   }
   for (const e of visual.expressions) {
     if (e.serial <= since) continue;
-    out.push({ tag: 'set-expression', val: { entity, space: e.space, weights: e.weights.slice() } });
+    out.push({
+      tag: 'set-expression',
+      val: { entity, space: e.space, weights: e.weights.slice() },
+    });
   }
   const look = visual.lookAt;
   if (look !== null && look.serial > since) {
@@ -133,21 +178,31 @@ export function pushVisualCommands(record: EntityRecord, since: number, out: Com
   if (clips !== null && clips.serial > since) {
     out.push({
       tag: 'set-clip-weights',
-      val: { entity, clips: clips.clips.slice(), weights: clips.weights.slice(), timeScale: clips.timeScale },
+      val: {
+        entity,
+        clips: clips.clips.slice(),
+        weights: clips.weights.slice(),
+        timeScale: clips.timeScale,
+      },
     });
   }
 }
 
 /**
  * Push everything a player needs to see a record they have never seen:
- * `spawn`, then `spawn-character`, `set-anim`, `set-character-state`, and
- * every visual entry.
+ * `spawn`, then `spawn-character`, `set-anim`, `set-character-state`, the
+ * placeholder's `add-body` (asset-less, characterless entities only, so the
+ * tint below lands on it), and every visual entry.
  *
  * @param record The live record.
  * @param parent The parent to name in the spawn.
  * @param out Where the commands go.
  */
-export function pushIntroduction(record: EntityRecord, parent: number | undefined, out: Command[]): void {
+export function pushIntroduction(
+  record: EntityRecord,
+  parent: number | undefined,
+  out: Command[],
+): void {
   out.push(spawnCommand(record, parent));
   const character = spawnCharacterCommand(record);
   if (character !== null) out.push(character);
@@ -155,5 +210,9 @@ export function pushIntroduction(record: EntityRecord, parent: number | undefine
   if (anim !== null) out.push(anim);
   const state = characterStateCommand(record);
   if (state !== null) out.push(state);
+  if (record.asset === undefined && record.character === null) {
+    const shape = bodyShapeCommand(record);
+    if (shape !== null) out.push(shape);
+  }
   pushVisualCommands(record, -1, out);
 }

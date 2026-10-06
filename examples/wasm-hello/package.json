@@ -17,7 +17,7 @@
     "provision": "node --env-file-if-exists=.env.local scripts/provision.mjs"
   },
   "dependencies": {
-    "@gameable/voxy": "file:vendor/gameable-voxy-0.1.0.tgz",
+    "@getgameable/voxy": "0.1.0",
     "gameable": "*",
     "three": "0.186.0"
   },

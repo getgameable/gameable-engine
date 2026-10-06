@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "gameable": "0.0.0"
+    "gameable": "*"
   },
   "devDependencies": {
     "vite": "8.3.0"

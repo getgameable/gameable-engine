@@ -59,6 +59,7 @@ export function createEntityRecord(
     anim: null,
     character: null,
     body: undefined,
+    bodyShape: null,
     visual: new VisualState(entity),
     serial: tick,
     poseSerial: tick,
@@ -91,6 +92,10 @@ export function snapshotEntity(record: EntityRecord): EntitySnapshot {
         ? null
         : { ...record.character, velocity: { ...record.character.velocity } },
     body: record.body,
+    bodyShape:
+      record.bodyShape === null
+        ? null
+        : { kind: record.bodyShape.kind, halfExtents: { ...record.bodyShape.halfExtents } },
     visual: record.visual.snapshot(),
     serial: record.serial,
   };

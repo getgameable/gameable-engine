@@ -60,6 +60,36 @@ describe('createThirdPersonController().updatePlayers', () => {
     expect(controller.stateOf(0)?.vz).toBeLessThan(0);
   });
 
+  it('walks a player whose prefab has no health', () => {
+    const body = { shape: 'capsule', dims: [0.3, 0.9], kind: 'character' } as const;
+    const Walker = prefab({ name: 'walker', body });
+    const controller = createThirdPersonController();
+    const { guest } = rig(
+      {
+        player: { prefab: Walker },
+        init: (ctx) => {
+          controller.reset(ctx);
+        },
+        systems: [
+          {
+            on: 'authority',
+            run: (ctx: GameContext) => {
+              controller.updatePlayers(ctx);
+            },
+          },
+        ],
+      },
+      AUTHORITY,
+    );
+    const w = stubInput();
+    hold(w, 'W');
+    const players = [{ player: 0, seq: 0, input: w }];
+    for (let frame = 0; frame < 5; frame += 1) {
+      guest.tick(roomFrame(frame, frame === 0 ? [joined(0)] : [], players));
+    }
+    expect(controller.stateOf(0)?.vz).toBeLessThan(0);
+  });
+
   it('starts the possessed entity from rest: the seat state resets on an entity change', () => {
     const body = { shape: 'capsule', dims: [0.3, 0.9], kind: 'character' } as const;
     const Avatar = prefab({ name: 'avatar', body, health: 100 });

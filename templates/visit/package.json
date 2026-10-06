@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@gameable/voxy": "file:../../examples/wasm-hello/vendor/gameable-voxy-0.1.0.tgz",
+    "@getgameable/voxy": "0.1.0",
     "gameable": "*",
     "jolt-physics": "1.1.0",
     "three": "0.186.0"

@@ -26,6 +26,7 @@ export { createServerLoop, ServerLoop, type ServerLoopOptions } from './ServerLo
 export { TransientCommands } from './TransientCommands';
 export type {
   AnimRecord,
+  BodyShapeRecord,
   CharacterRecord,
   DataSink,
   EntityRecord,

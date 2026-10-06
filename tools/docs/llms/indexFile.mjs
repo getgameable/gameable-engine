@@ -61,7 +61,7 @@ export function buildIndex() {
   l.push('# Gameable Engine');
   l.push('');
   l.push(
-    '> Gameable Engine (`aos-gameable-engine`) is a browser game engine: gaussian-splat worlds rendered by three.js on WebGPU, with all game logic compiled to a WebAssembly component.',
+    '> Gameable Engine (the npm package `gameable`) is a browser game engine: gaussian-splat worlds rendered by three.js on WebGPU, with all game logic compiled to a WebAssembly component.',
   );
   l.push('');
   l.push(

@@ -12,8 +12,8 @@ import type { Engine } from 'gameable/core';
 import type { ConversationCmd, GameEvent } from 'gameable';
 import { voice } from 'gameable/voice';
 import type { CharacterBridge } from 'gameable/host/characters';
-import vadUrl from '@gameable/voxy/models/silero_vad.onnx?url';
-import noiseUrl from '@gameable/voxy/wasm/rnnoise.wasm?url';
+import vadUrl from '@getgameable/voxy/models/silero_vad.onnx?url';
+import noiseUrl from '@getgameable/voxy/wasm/rnnoise.wasm?url';
 import type { VisitUi } from './ui';
 
 /** The character's entity: the first thing the game spawns. */
@@ -93,7 +93,7 @@ export function createTalk(
   const mic = voice({
     playbackEchoGuardMs: 700,
     async createCapture() {
-      const { VoxyCore } = await import('@gameable/voxy/core');
+      const { VoxyCore } = await import('@getgameable/voxy/core');
       const capture = new VoxyCore({
         sampleRate: 16000,
         modelUrl: vadUrl,

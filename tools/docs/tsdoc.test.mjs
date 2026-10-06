@@ -24,7 +24,9 @@ function tsFiles(dir) {
 }
 
 describe('doc comments in packages/*/src', () => {
-  it('have no line without its leading `*` (a `\\n` expanded inside a comment)', () => {
+  // It reads every source file under packages/: 59 ms in main #33, past vitest's 5 s default in #34 on the same busy
+  // agent (2026-10-06), so the limit is the llms publish test's.
+  it('have no line without its leading `*` (a `\\n` expanded inside a comment)', { timeout: 60_000 }, () => {
     const bad = [];
     for (const file of tsFiles(join(ROOT, 'packages'))) {
       if (!file.replaceAll('\\', '/').includes('/src/')) continue;

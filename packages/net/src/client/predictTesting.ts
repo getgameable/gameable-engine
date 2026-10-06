@@ -71,6 +71,8 @@ export function bodyAdapter(world: () => PhysicsService): TestClientAdapter & { 
     (forward ??= createServerAdapter(world(), { warn: () => undefined }));
   return Object.assign(base, {
     addBody: (args: AddBodyCmd) => {
+      // Body 0 is a replicated prop's placeholder: drawn, never a body.
+      if (args.body === 0) return;
       base.adds += 1;
       bodies().addBody(args);
     },

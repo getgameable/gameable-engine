@@ -11,7 +11,7 @@ Hands-free interviews with VAD and interruption. Keep typed input available when
 ## Install
 
 ```sh
-npm install --save-exact gameable @gameable/voxy
+npm install --save-exact gameable @getgameable/voxy
 ```
 
 ## Minimal example
@@ -21,7 +21,7 @@ import { voice } from 'gameable/voice';
 const microphone = voice({
   playbackEchoGuardMs: 700, // Speaker-safe mode; explicit UI interruption.
   async createCapture() {
-    const { VoxyCore } = await import('@gameable/voxy/core');
+    const { VoxyCore } = await import('@getgameable/voxy/core');
     return new VoxyCore({ sampleRate: 16000 });
   },
   async transcribe(pcm, signal) {

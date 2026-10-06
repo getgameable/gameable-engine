@@ -12,6 +12,7 @@ import type {
   Entity,
   ExpressionSpace,
   MaterialValue,
+  ShapeKind,
   Vec3,
 } from '@gameable/sdk';
 
@@ -27,6 +28,8 @@ interface SnapshotEntity {
   scale: number[];
   anim: { clip: string; looping: boolean; speed: number } | null;
   character: { bundle: number; state: string; grounded: boolean; velocity: Vec3 } | null;
+  body?: number;
+  bodyShape?: { kind: ShapeKind; halfExtents: Vec3 } | null;
   visual?: {
     materials: { name: string; value: MaterialValue }[];
     expressions: { space: ExpressionSpace; weights: number[] }[];
@@ -86,6 +89,28 @@ function introduce(e: SnapshotEntity, out: Command[]): void {
   if (character !== null) {
     const { state, grounded, velocity } = character;
     out.push({ tag: 'set-character-state', val: { entity, state, velocity, grounded } });
+  }
+  const shape = e.bodyShape;
+  if (e.asset === undefined && character === null && shape != null) {
+    out.push({
+      tag: 'add-body',
+      val: {
+        body: 0, // draw-only: the page makes no body for it
+        entity,
+        kind: 'fixed',
+        shape: { kind: shape.kind, halfExtents: { ...shape.halfExtents } },
+        position: vec(e.position),
+        rotation,
+        mass: 0,
+        friction: 0,
+        restitution: 0,
+        linearDamping: 0,
+        angularDamping: 0,
+        layer: {},
+        mask: {},
+        flags: {},
+      },
+    });
   }
   const visual = e.visual;
   if (visual === undefined) return;

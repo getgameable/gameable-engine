@@ -4,7 +4,7 @@
  *
  * `WorldRecord` extends it with the setters the guest's commands call.
  */
-import type { AssetId, BodyId, Entity, Quat, Vec3 } from '@gameable/sdk';
+import type { AssetId, BodyId, Entity, Quat, Shape, Vec3 } from '@gameable/sdk';
 import { MAX_PLAYER_ID } from '@gameable/sdk/wire';
 
 import { BodyTable } from './BodyTable';
@@ -203,25 +203,37 @@ export class EntityTable {
    *
    * @param body Body id.
    * @param entity Entity id.
+   * @param shape The guest's `add-body` shape, copied onto the record so a
+   *   later introduction can draw the same placeholder on a client with no
+   *   physics module. `undefined` leaves any shape the record already has.
    * @returns False when the id is at or past `maxBodies`: nothing was mapped,
    *   and the body must not be created.
    */
-  attachBody(body: BodyId, entity: Entity): boolean {
+  attachBody(body: BodyId, entity: Entity, shape?: Shape): boolean {
     if (!this.bodies.set(body, entity)) return false;
     const record = this.records.get(entity);
-    if (record !== undefined) record.body = body;
+    if (record !== undefined) {
+      record.body = body;
+      if (shape !== undefined) {
+        const half = shape.halfExtents;
+        record.bodyShape = { kind: shape.kind, halfExtents: { x: half.x, y: half.y, z: half.z } };
+      }
+    }
     return true;
   }
 
   /**
-   * Forget a body, and clear it from the entity it drove.
+   * Forget a body, and clear it (and its shape) from the entity it drove.
    *
    * @param body Body id.
    */
   detachBody(body: BodyId): void {
     const record = this.records.get(this.bodies.entityOf(body));
     this.bodies.set(body, 0);
-    if (record?.body === body) record.body = undefined;
+    if (record?.body === body) {
+      record.body = undefined;
+      record.bodyShape = null;
+    }
   }
 
   /**

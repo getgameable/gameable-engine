@@ -4,7 +4,7 @@
  * (`ctx.player`, `ctx.input`, `ctx.camera`) or for each player of a room
  * (their entity, input and camera). Allocates nothing.
  */
-import { Health, Transform, Velocity } from './ecs';
+import { Health, Transform, Velocity, hasComponent } from './ecs';
 import { TRANSFORM_FLAGS, markMoved } from './packing';
 import { character } from './character';
 import type { camera } from './camera';
@@ -129,7 +129,10 @@ export function driveThirdPerson(
   follow.height = Number(ctx.rules.cameraHeight ?? 0.55);
   view.follow(hero, follow);
 
-  const frozen = freeze || (Health.current[hero] ?? 0) <= 0;
+  // Only a hero that has health and has run out of it is down. A hero with no
+  // Health component reads 0 from the store, and must still walk.
+  const down = hasComponent(ctx.world, hero, Health) && (Health.current[hero] ?? 0) <= 0;
+  const frozen = freeze || down;
   const move = keys.axis2('A', 'D', 'S', 'W');
   const mx = frozen ? 0 : move.x;
   const my = frozen ? 0 : move.y;

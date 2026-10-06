@@ -61,7 +61,9 @@ export class PhysicsForwarder {
 
   /** @param args The guest's `add-body`. */
   addBody(args: AddBodyCmd): void {
-    if (!this.world.attachBody(args.body, args.entity)) return; // past maxBodies: dropped, warned
+    // Recorded even for a shape the guest shape check below will reject: a
+    // client still needs the box, capsule or sphere to stand in for it.
+    if (!this.world.attachBody(args.body, args.entity, args.shape)) return; // past maxBodies: dropped, warned
     const kind = shapeKind(args.shape.kind);
     if (!isGuestShape(kind)) {
       const skip = addBodySkip(args.shape.kind, kind);

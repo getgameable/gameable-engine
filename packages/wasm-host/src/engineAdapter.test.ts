@@ -343,6 +343,24 @@ describe('createEngineAdapter', () => {
     expect(parameters.height).toBeCloseTo(1.8);
   });
 
+  it('add-body on body 0 only draws the placeholder: no body, no physics warning', () => {
+    // A room's authority sends body 0 to tell a page an asset-less entity's
+    // shape; the page has no physics module and must make no body.
+    spawnAt(adapter, 1, { x: 0, y: 0, z: 0 });
+    adapter.addBody(
+      addBodyCmd({ body: 0, shape: { kind: 'box', halfExtents: { x: 1, y: 2, z: 3 } } }),
+    );
+    const object = harness.engine.graph.get(1) as Object3D;
+    const mesh = object.children[0] as Mesh;
+    expect(mesh.name).toBe('aos:placeholder');
+    const parameters = (mesh.geometry as unknown as { parameters: Record<string, number> })
+      .parameters;
+    expect(parameters.width).toBeCloseTo(2);
+    expect(parameters.height).toBeCloseTo(4);
+    expect(parameters.depth).toBeCloseTo(6);
+    expect(warnings).toEqual([]);
+  });
+
   it('draws nothing for an asset-less entity by default', () => {
     spawnAt(adapter, 1, { x: 0, y: 0, z: 0 });
     expect(harness.engine.graph.get(1)?.children).toHaveLength(0);
@@ -1604,7 +1622,14 @@ describe('setTransformFromHost', () => {
   it('writes only the lanes the flags name, snaps on TELEPORT and shows on VISIBLE', () => {
     const harness = makeEngine();
     const adapter = createEngineAdapter(harness.engine, { hud: false, warn: () => undefined });
-    adapter.spawn(4, undefined, { x: 0, y: 0, z: 0 }, IDENTITY, { x: 2, y: 2, z: 2 }, { visible: false });
+    adapter.spawn(
+      4,
+      undefined,
+      { x: 0, y: 0, z: 0 },
+      IDENTITY,
+      { x: 2, y: 2, z: 2 },
+      { visible: false },
+    );
     const position = new Float32Array([1, 2, 3]);
     const rotation = new Float32Array([0, 1, 0, 0]);
     const scale = new Float32Array([9, 9, 9]);

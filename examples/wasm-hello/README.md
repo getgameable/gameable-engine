@@ -73,8 +73,7 @@ Without configured services the character, FPS display and Wave still work.
 
 The authored guide is `stories/engine-hello.yaml`; provision it once per service
 environment and again after changing the story. It identifies itself as a
-fictional Gameable guide. The Voxy package is pinned in `vendor/` through Git
-LFS so clean builds do not depend on a sibling checkout.
+fictional Gameable guide. Microphone capture is [`@getgameable/voxy`](https://github.com/getgameable/voxy).
 
 `tests/game.test.ts` checks session gating, command routing and idle/wave
 transitions; `tests/presentation.test.ts` checks FPS timing and keyboard insets.

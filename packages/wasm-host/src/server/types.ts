@@ -6,6 +6,7 @@ import type { CameraState, ExchangeCmd, InputState, SendCmd } from '@gameable/sd
 
 export type {
   AnimRecord,
+  BodyShapeRecord,
   CharacterRecord,
   EntityRecord,
   EntitySnapshot,

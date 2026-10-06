@@ -9,7 +9,7 @@
     "build:guest": "node scripts/build.mjs"
   },
   "dependencies": {
-    "gameable": "0.0.0"
+    "gameable": "*"
   },
   "devDependencies": {
     "@bytecodealliance/jco": "1.33.0",

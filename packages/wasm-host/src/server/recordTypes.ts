@@ -5,9 +5,35 @@
  * renderer owns: no `Object3D`, no material, no interpolation pair. The
  * replicator (phase 3) reads these and turns them back into commands.
  */
-import type { AssetId, BodyId, Entity, ExpressionSpace, MaterialValue, Vec3 } from '@gameable/sdk';
+import type {
+  AssetId,
+  BodyId,
+  Entity,
+  ExpressionSpace,
+  MaterialValue,
+  ShapeKind,
+  Vec3,
+} from '@gameable/sdk';
 
 import type { VisualState } from './VisualState';
+
+/**
+ * A body's shape, kept from its `add-body` so a late or live introduction can
+ * draw the same placeholder box, capsule or sphere a client would have built
+ * for itself, for an entity that has neither an asset nor a character.
+ *
+ * @example
+ * ```ts
+ * const shape = adapter.world.entities.get(5)?.bodyShape;
+ * if (shape) console.log(shape.kind, shape.halfExtents);
+ * ```
+ */
+export interface BodyShapeRecord {
+  /** The WIT shape family, as `add-body` sent it. */
+  kind: ShapeKind;
+  /** Half extents, in the WIT lane order (radius in `x` for a sphere). */
+  halfExtents: Vec3;
+}
 
 /**
  * The animation a `set-anim` last asked for.
@@ -93,6 +119,12 @@ export interface EntityRecord {
   character: CharacterRecord | null;
   /** The body driving this entity, or `undefined`. */
   body: BodyId | undefined;
+  /**
+   * The shape behind `body`, or `null` before an `add-body` or after its
+   * `remove-body`. Kept even when the entity has an asset or a character: an
+   * introduction only draws it when both are absent.
+   */
+  bodyShape: BodyShapeRecord | null;
   /**
    * Material parameters, expression, look-at and clip weights: the latest of
    * each, kept so a late joiner is told them. Made at spawn; each entry has
