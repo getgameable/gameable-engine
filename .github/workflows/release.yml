@@ -9,10 +9,16 @@ name: release
 # <id>`) with their second factor. Re-running this before the approval stages
 # the same version again; reject the stale one.
 #
+# It runs after `ci` passes on main, for the commit ci tested, and does not
+# run the suite again: the allocation tests read the heap, and a second run on
+# another runner can fail one by noise alone and block a release ci passed.
+#
 # Runs only in the public repository: the internal tree carries this file too.
 
 on:
-  push:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -26,10 +32,14 @@ permissions:
 
 jobs:
   publish:
-    if: github.repository == 'getgameable/gameable-engine'
+    if: >-
+      github.repository == 'getgameable/gameable-engine' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: actions/setup-node@v4
         with:
@@ -54,9 +64,6 @@ jobs:
       - if: steps.version.outputs.publish == 'true'
         run: npm ci
 
-      - if: steps.version.outputs.publish == 'true'
-        run: npm run check
-
       - name: Stage gameable on npm, to be approved on npmjs.com
         if: steps.version.outputs.publish == 'true'
         run: npm stage publish -w packages/gameable --provenance --access public
@@ -71,6 +78,6 @@ jobs:
 
       - name: Tag and release
         if: steps.version.outputs.publish == 'true'
-        run: gh release create "v${{ steps.version.outputs.version }}" --target "$GITHUB_SHA" --generate-notes --notes "Staged on npm, installable once an owner approves it."
+        run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ github.event.workflow_run.head_sha || github.sha }}" --generate-notes --notes "Staged on npm, installable once an owner approves it."
         env:
           GH_TOKEN: ${{ github.token }}
